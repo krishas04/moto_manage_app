@@ -1,16 +1,27 @@
-# moto_manage
+# Moto Manage 🏍️
 
-A new Flutter project.
+Moto Manage is a Flutter application designed to help manage and display vehicle owners and their respective vehicles. The app communicates with a backend API to fetch real-time data about users and their motorbikes/cars.
 
-## Getting Started
+## 🚀 Recent Updates & Progress
 
-This project is a starting point for a Flutter application.
+I have refactored the project to follow a **Clean Architecture** pattern, separating the UI from the logic and data models.
 
-A few resources to get you started if this is your first Flutter project:
+### 📂 Project Structure Improvements
+To make the code scalable and readable, I organized the `lib/` directory into the following folders:
+- **`Models/`**: Contains Dart classes that represent the data structure (e.g., `OwnerModel`, `VehicleModel`). Handles JSON-to-Object conversion.
+- **`Services/`**: Contains the API logic. This is where the networking code lives, keeping it separate from the UI.
+- **`Screens/`**: Contains the different pages of the app (e.g., `OwnerScreen`, `VehicleScreen`).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 🛠️ Dependencies Added
+- **`http`**: Added to `pubspec.yaml` to enable the app to make GET requests to the backend server.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 🌐 Backend Integration
+- **Local API Hosting**: The app is successfully connected to a Django(DRF) backend hosted on a local network.
+- **Connection**: Instead of `localhost`, I am using the developer's specific IP address (`http://192.168.xxx.xxx:8000`) to allow a physical mobile device or emulator to communicate with the server.
+
+## 📱 Features Implemented
+- **Owner List**: A `ListView.separated` screen displaying all registered owners.
+- **Dynamic Fetching**: Uses `FutureBuilder` to handle loading, error, and data states.
+- **Vehicle Details**: (In Progress) Filtering vehicles based on the selected owner.
+
+---
