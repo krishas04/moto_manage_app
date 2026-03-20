@@ -6,11 +6,11 @@ import 'package:moto_manage/Models/owner_model.dart';
 import '../Models/vehicles_model.dart';
 
 class ApiService{
-  final String baseUrl = "http://192.168.101.4:8000/api";
+  final String baseUrl = "http://10.0.2.2:8000/api";
 
   // fetch all users
   Future<List<OwnerModel>> getOwners() async{
-    final response=await http.get(Uri.parse('$baseUrl/users'));
+    final response=await http.get(Uri.parse('$baseUrl/users/'));
 
     if(response.statusCode==200){
       // json string -> dart object
@@ -31,6 +31,18 @@ class ApiService{
       return data.map((json) => VehicleModel.fromJson(json)).toList();
     } else {
       throw Exception("Failed to load vehicles");
+    }
+  }
+
+  //fetch vehicles for a specific owner
+  Future<List<VehicleModel>> getVehiclesByOwner(String ownerId) async{
+    final response= await http.get(Uri.parse('$baseUrl/users/$ownerId/vehicles/'));
+
+    if(response.statusCode==200){
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => VehicleModel.fromJson(json)).toList();
+    }else {
+      throw Exception("Failed to load vehicles for owner $ownerId");
     }
   }
 }

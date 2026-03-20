@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moto_manage/Screens/vehicles_screen.dart';
 
 import '../Models/owner_model.dart';
@@ -59,9 +60,7 @@ class _OwnerScreenState extends State<OwnerScreen> {
                   title: Text(owner.fullName),
                   subtitle: Text(owner.mobileNumber),
                   onTap: (){
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=>VehiclesScreen()));
+                    context.push('/vehicles/${owner.id}');
                   },
                 );
               },

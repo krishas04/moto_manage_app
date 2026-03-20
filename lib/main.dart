@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Routes/router.dart';
 import 'Screens/owner_screen.dart';
 
 void main() {
@@ -10,13 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Moto Manage',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: OwnerScreen(),
+      routerConfig: router,
     );
   }
 }
