@@ -24,4 +24,11 @@ I learned how to use `async`, `await`, and the `Future` type.
 *   **ListTile & Card**: Learned how to use these to create professional-looking rows quickly.
 
 ---
-*Next Goal: Implementing Named Routes and Data Filtering!*
+
+### Imperative vs. Declarative:
+Imperative navigation (Navigator 1.0) manually pushes and pops screens like a stack, whereas declarative navigation (GoRouter) defines exactly what screen to show based on a specific URL or state.
+
+### GoRouter: 
+It centralizes your app's navigation into a single configuration file, making it easy to handle complex routing and pass dynamic data through path parameters like /owner/:id.
+
+*Next Goal: Implementing Data Entry (POST Requests)!*

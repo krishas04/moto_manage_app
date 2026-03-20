@@ -1,27 +1,28 @@
 # Moto Manage 🏍️
-
 Moto Manage is a Flutter application designed to help manage and display vehicle owners and their respective vehicles. The app communicates with a backend API to fetch real-time data about users and their motorbikes/cars.
 
-## 🚀 Recent Updates & Progress
+🚀 Recent Updates & Progress
+The app has evolved from a simple list to a robust, routed application using Clean Architecture and Declarative Navigation.
 
-I have refactored the project to follow a **Clean Architecture** pattern, separating the UI from the logic and data models.
+🛠️ Tech Stack & Key Dependencies
+`Framework`: Flutter
+`Navigation`: go_router (Declarative routing with path parameters)
+`Backend`: Django Rest Framework (DRF) hosted on local IP.
+`Networking`: http for RESTful API communication.
 
-### 📂 Project Structure Improvements
-To make the code scalable and readable, I organized the `lib/` directory into the following folders:
-- **`Models/`**: Contains Dart classes that represent the data structure (e.g., `OwnerModel`, `VehicleModel`). Handles JSON-to-Object conversion.
-- **`Services/`**: Contains the API logic. This is where the networking code lives, keeping it separate from the UI.
-- **`Screens/`**: Contains the different pages of the app (e.g., `OwnerScreen`, `VehicleScreen`).
+🏗️ Architecture & Routing
+I have implemented a Feature-First Clean Architecture:
+`Models/`: Contains Dart classes that represent the data structure (e.g., OwnerModel, VehicleModel). Handles JSON-to-Object conversion.
+`Services/`: Contains the API logic. This is where the networking code lives, keeping it separate from the UI.
+`Screens/`: Contains the different pages of the app (e.g., OwnerScreen, VehicleScreen).
+`Router/`:Centralized route configuration using GoRouter.
 
-### 🛠️ Dependencies Added
-- **`http`**: Added to `pubspec.yaml` to enable the app to make GET requests to the backend server.
+🛣️ Advanced Navigation Features
+Named Routes: Replaced string-based navigation with named routes to prevent hardcoding errors.
+Path Parameters: Implemented dynamic routing for vehicle details (e.g., /owner/:ownerId). This allows the app to deep-link directly to a specific user's garage.
 
-### 🌐 Backend Integration
-- **Local API Hosting**: The app is successfully connected to a Django(DRF) backend hosted on a local network.
-- **Connection**: Instead of `localhost`, I am using the developer's specific IP address (`http://192.168.xxx.xxx:8000`) to allow a physical mobile device or emulator to communicate with the server.
-
-## 📱 Features Implemented
-- **Owner List**: A `ListView.separated` screen displaying all registered owners.
-- **Dynamic Fetching**: Uses `FutureBuilder` to handle loading, error, and data states.
-- **Vehicle Details**: (In Progress) Filtering vehicles based on the selected owner.
-
----
+📱 Features Implemented
+✅ Dynamic Owner Dashboard: Fetching and displaying owners via a Django API.
+✅ Deep Linking with GoRouter: Click an owner to view their specific "Garage" using ownerId.
+✅ State-Aware UI: FutureBuilder implementation to handle Loading, Empty, and Error states.
+✅ Local Network Sync: Seamless communication between physical hardware and a local development server.
