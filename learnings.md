@@ -31,4 +31,19 @@ Imperative navigation (Navigator 1.0) manually pushes and pops screens like a st
 ### GoRouter: 
 It centralizes your app's navigation into a single configuration file, making it easy to handle complex routing and pass dynamic data through path parameters like /owner/:id.
 
-*Next Goal: Implementing Data Entry (POST Requests)!*
+---
+### Serialization & Models
+- Learned to convert `JSON` to `Dart objects` using `Model.fromJson` and back with `toJson`.
+- Makes code type-safe and reduces errors when mapping API responses.
+
+### POST Requests & Status Codes
+- Learned `http.post` to send new owner data to the backend.
+- Checked response status codes to confirm success (201) or handle failure (400/500).
+- Used SnackBar to give real-time feedback to users.
+
+### Forms & Dropdowns
+- `Form` with `GlobalKey<FormState>` allows validation of multiple fields.
+- `TextFormField` for text input with validator.
+- `DropdownButtonFormField` for selecting gender, integrated with form state.
+
+*Next Goal: Fully implement Clean Architecture with layers: Presentation, Domain, Data.!*
