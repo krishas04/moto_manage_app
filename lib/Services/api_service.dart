@@ -45,4 +45,21 @@ class ApiService{
       throw Exception("Failed to load vehicles for owner $ownerId");
     }
   }
+
+  //create owner
+  Future<bool> createOwner(OwnerModel owner) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/users/'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(owner.toJson()),
+      );
+
+      return response.statusCode == 201;
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+
 }

@@ -57,8 +57,8 @@ class _OwnerScreenState extends State<OwnerScreen> {
                 final owner = owners[index];
                 return ListTile(
                   leading: Icon(Icons.person),
-                  title: Text(owner.fullName),
-                  subtitle: Text(owner.mobileNumber),
+                  title: Text(owner.fullName!),
+                  subtitle: Text(owner.phoneNumber!),
                   onTap: (){
                     context.push('/vehicles/${owner.id}');
                   },
@@ -71,6 +71,7 @@ class _OwnerScreenState extends State<OwnerScreen> {
           return const Center(child: Text("Something went wrong"));
         },
       ),
+        floatingActionButton: FloatingActionButton(onPressed: (){context.push('/users');},child: Icon(Icons.add),)
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/Screens/create_owner_screen.dart';
 import 'package:moto_manage/Screens/owner_screen.dart';
 import 'package:moto_manage/Screens/vehicles_by_owner_screen.dart';
 import 'package:moto_manage/Screens/vehicles_screen.dart';
@@ -12,6 +13,10 @@ final router= GoRouter(
       GoRoute(
           path: '/vehicles',
           builder: (context,state)=> VehiclesScreen()
+      ),
+      GoRoute(
+          path: '/users',
+          builder: (context,state)=> CreateOwnerScreen()
       ),
       GoRoute(
           path: '/vehicles/:ownerId',
