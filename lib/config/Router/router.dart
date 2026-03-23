@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
-import 'package:moto_manage/Screens/create_owner_screen.dart';
-import 'package:moto_manage/Screens/owner_screen.dart';
-import 'package:moto_manage/Screens/vehicles_by_owner_screen.dart';
-import 'package:moto_manage/Screens/vehicles_screen.dart';
+import '../../features/owner_management/presentation/pages/create_owner_screen.dart';
+import '../../features/owner_management/presentation/pages/owner_screen.dart';
+import '../../features/vehicles_management/presentation/pages/vehicles_by_owner_screen.dart';
+import '../../features/vehicles_management/presentation/pages/vehicles_screen.dart';
 
 final router= GoRouter(
     routes: [

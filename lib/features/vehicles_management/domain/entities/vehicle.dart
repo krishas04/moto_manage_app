@@ -1,4 +1,4 @@
-class VehicleModel{
+class VehicleEntity {
   final int id;
   final int ownerId;
   final String ownerUsername;
@@ -8,7 +8,7 @@ class VehicleModel{
   final String vehicleType;
   final String fuelType;
 
-  VehicleModel({
+  VehicleEntity({
     required this.id,
     required this.ownerId,
     required this.ownerUsername,
@@ -18,17 +18,4 @@ class VehicleModel{
     required this.vehicleType,
     required this.fuelType,
   });
-
-  factory VehicleModel.fromJson(Map<String,dynamic> json){
-    return VehicleModel(
-        id: json['id'],
-        ownerId: json['owner'],
-        ownerUsername: json['owner_username'],
-        make: json['make'],
-        model: json['model'],
-        year: json['year'],
-        vehicleType: json['vehicle_type'],
-        fuelType: json['fuel_type'],
-    );
-  }
 }

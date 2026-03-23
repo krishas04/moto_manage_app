@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:moto_manage/Models/vehicles_model.dart';
-import 'package:moto_manage/Services/api_service.dart';
+import 'package:moto_manage/core/di/service_locator.dart';
+import 'package:moto_manage/features/vehicles_management/domain/usecases/get_vehicle_by_owner_usecase.dart';
+
+import '../../domain/entities/vehicle.dart';
+
 class VehiclesByOwnerScreen extends StatefulWidget {
   final String ownerId;
   const VehiclesByOwnerScreen({super.key, required this.ownerId});
@@ -10,19 +13,20 @@ class VehiclesByOwnerScreen extends StatefulWidget {
 }
 
 class _VehiclesByOwnerScreenState extends State<VehiclesByOwnerScreen> {
-  final ApiService apiService=ApiService();
-  late Future<List<VehicleModel>> futureVehicles;
+  late final GetVehiclesByOwnerUseCase getVehiclesByOwnerUseCase= getIt<GetVehiclesByOwnerUseCase>();
+  late Future<List<VehicleEntity>> futureVehicles;
 
+  @override
   void initState(){
     super.initState();
-    futureVehicles= apiService.getVehiclesByOwner(widget.ownerId);
+    futureVehicles= getVehiclesByOwnerUseCase.call(widget.ownerId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Owner's Vehicles")),
-      body: FutureBuilder<List<VehicleModel>>(
+      body: FutureBuilder(
         future: futureVehicles,
         builder: (context, snapshot) {
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:moto_manage/Services/api_service.dart';
+import 'package:moto_manage/core/di/service_locator.dart';
+import 'package:moto_manage/features/vehicles_management/domain/entities/vehicle.dart';
+import 'package:moto_manage/features/vehicles_management/domain/usecases/get_vehicles_usecase.dart';
 
-import '../Models/vehicles_model.dart';
 
 class VehiclesScreen extends StatefulWidget {
   const VehiclesScreen({super.key});
@@ -11,12 +12,14 @@ class VehiclesScreen extends StatefulWidget {
 }
 
 class _VehiclesScreenState extends State<VehiclesScreen> {
-  final ApiService apiService= ApiService();
-  late Future<List<VehicleModel>> futureVehicles;
+  late final GetVehiclesUseCase getVehiclesUseCase=getIt<GetVehiclesUseCase>();
 
+  late Future<List<VehicleEntity>> futureVehicles;
+
+  @override
   void initState(){
     super.initState();
-    futureVehicles=apiService.getVehicles();
+    futureVehicles=getVehiclesUseCase.call() ;
   }
 
   @override

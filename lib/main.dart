@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'Routes/router.dart';
-import 'Screens/owner_screen.dart';
+
+import 'config/Router/router.dart';
+import 'core/di/service_locator.dart';
 
 void main() {
+  setupLocator();
   runApp(const MyApp());
 }
 

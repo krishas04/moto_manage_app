@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:moto_manage/Models/owner_model.dart';
-import 'package:moto_manage/Services/api_service.dart';
+
+import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
+import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usercase.dart';
+import 'package:moto_manage/features/owner_management/presentation/widgets/custom_text_field.dart';
+
+import '../../../../core/di/service_locator.dart';
+
 
 class CreateOwnerScreen extends StatefulWidget {
   const CreateOwnerScreen({super.key});
@@ -22,8 +27,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   String _selectedGender = "male";
 
   final _formKey = GlobalKey<FormState>();
-
-  final ApiService apiService=ApiService();
+  late final CreateOwnerUseCase createOwnerUseCase= getIt<CreateOwnerUseCase>();
 
 
   @override
@@ -45,7 +49,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
         const SnackBar(content: Text('Processing Data')),
       );
 
-      final newOwner=OwnerModel(
+      final newOwner=OwnerEntity(
         username: _userNameController.text,
         email: _emailController.text,
         phoneNumber: _phoneController.text,
@@ -55,7 +59,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
         gender: _selectedGender,
       );
 
-      final success= await apiService.createOwner(newOwner);
+      final success= await createOwnerUseCase.call(newOwner);
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       if(success){
@@ -82,13 +86,12 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
               padding: EdgeInsets.all(10),
               child: Column(
                 children: [
-                  _buildField(_userNameController, "Username"),
-                  _buildField(_emailController, "Email", type: TextInputType.emailAddress),
-                  _buildField(_phoneController, "Phone Number", type: TextInputType.phone),
-                  _buildField(_fNameController, "First Name"),
-                  _buildField(_lNameController, "Last Name"),
-                  _buildField(_ageController, "Age", type: TextInputType.number),
-              
+                  CustomTextField(controller:_userNameController, label:"Username"),
+                  CustomTextField(controller:_emailController, label:"Email",type: TextInputType.emailAddress),
+                  CustomTextField(controller:_fNameController, label:"First Name"),
+                  CustomTextField(controller:_lNameController, label:"Last Name"),
+                  CustomTextField(controller:_ageController, label:"Age",type: TextInputType.number),
+
                   // Gender Dropdown
                   DropdownButtonFormField<String>(
                     initialValue: _selectedGender,
@@ -98,25 +101,18 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                     onChanged: (val) => setState(() => _selectedGender = val!),
                     decoration: const InputDecoration(labelText: "Gender"),
                   ),
-              
+
                   ElevatedButton(
                     onPressed:  _submitForm,
                     child: const Text('Submit'),
                   ),
                 ],
-              
+
               ),
             ),
           )),
     );
   }
 
-  Widget _buildField(TextEditingController controller, String label, {TextInputType type = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      keyboardType: type,
-      validator: (value) => value!.isEmpty ? "Required" : null,
-    );
-  }
+
 }
