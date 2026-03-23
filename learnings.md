@@ -25,25 +25,112 @@ I learned how to use `async`, `await`, and the `Future` type.
 
 ---
 
-### Imperative vs. Declarative:
+### 6. Imperative vs. Declarative:
 Imperative navigation (Navigator 1.0) manually pushes and pops screens like a stack, whereas declarative navigation (GoRouter) defines exactly what screen to show based on a specific URL or state.
 
-### GoRouter: 
+### 7. GoRouter: 
 It centralizes your app's navigation into a single configuration file, making it easy to handle complex routing and pass dynamic data through path parameters like /owner/:id.
 
 ---
-### Serialization & Models
+
+### 8. Serialization & Models
 - Learned to convert `JSON` to `Dart objects` using `Model.fromJson` and back with `toJson`.
 - Makes code type-safe and reduces errors when mapping API responses.
 
-### POST Requests & Status Codes
+### 9. POST Requests & Status Codes
 - Learned `http.post` to send new owner data to the backend.
 - Checked response status codes to confirm success (201) or handle failure (400/500).
 - Used SnackBar to give real-time feedback to users.
 
-### Forms & Dropdowns
+### 10. Forms & Dropdowns
 - `Form` with `GlobalKey<FormState>` allows validation of multiple fields.
 - `TextFormField` for text input with validator.
 - `DropdownButtonFormField` for selecting gender, integrated with form state.
 
-*Next Goal: Fully implement Clean Architecture with layers: Presentation, Domain, Data.!*
+### 12. Dependency Injection — get_it Package
+
+**The problem before get_it:** Every screen manually built the entire dependency
+chain from scratch:
+```dart
+final remoteDataSource = OwnerRemoteDataSource();
+final repository = OwnerRepositoryImpl(remoteDataSource);
+final useCase = GetOwnersUseCase(repository);
+```
+
+This caused three problems. First, the same chain was duplicated in every screen.
+Second, the screen knew about `OwnerRemoteDataSource` — a Data layer class —
+which violates clean architecture. Third, every screen created its own separate
+instance, wasting memory.
+
+**What get_it is:** A global service locator — think of it as a phone book for
+your app. You register how to build each object once. Any screen looks it up by
+type and gets back the already-built instance.
+
+**The three registration types:**
+
+`registerLazySingleton` — created only when first requested, then the same
+instance is reused forever. Use this for stateless classes like data sources,
+repositories, and use cases.
+
+`registerSingleton` — created immediately when `setupLocator()` runs, before
+anyone asks for it. Use when something must exist before anything else starts.
+
+`registerFactory` — creates a brand new instance every single time `getIt()` is
+called. Use when each caller needs its own fresh copy.
+
+For this project, `registerLazySingleton` is correct for everything because use
+cases and repositories hold no state — they just do work.
+
+**Why `GetIt.instance` is global:** No matter how many files write
+`final getIt = GetIt.instance`, they all point to the exact same object. There is
+one phone book for the entire app. A screen in `owner_management` and a screen
+in `vehicles_management` both call `getIt()` and talk to the same registry.
+
+**Why register order matters:** Register dependencies before the things that need
+them. Data sources have no dependencies, so they go first. Repositories need a
+data source, so they go second. Use cases need a repository, so they go last.
+Registering in the wrong order causes a "not registered" crash.
+
+**Why register as the interface, not the concrete class:**
+```dart
+// Correct — register as the abstract type
+getIt.registerLazySingleton<OwnerRepository>(
+  () => OwnerRepositoryImpl(getIt()),
+);
+```
+
+Use cases are written to depend on `OwnerRepository` (the abstract interface).
+If tomorrow the backend switches to a local database, only this one line in
+`service_locator.dart` changes. Every use case and every screen stays untouched.
+
+**Why `setupLocator()` must run before `runApp()`:** The moment `runApp` starts,
+Flutter begins building widgets. The first screen to build immediately calls
+`getIt<UseCase>()`. If `setupLocator()` hasn't run yet, the phone book is empty and
+the app crashes with "not registered". The phone book must exist before any
+widget asks for anything.
+
+**The outcome:** Screens dropped from three lines of manual wiring to one line:
+```dart
+// Before
+final remoteDataSource = OwnerRemoteDataSource();
+final repository = OwnerRepositoryImpl(remoteDataSource);
+final useCase = GetOwnersUseCase(repository);
+
+// After
+final useCase = getIt<GetOwnersUseCase>();
+```
+
+The screen now has zero knowledge of `OwnerRemoteDataSource` or
+`OwnerRepositoryImpl`. Clean architecture is fully restored.
+
+**Splitting registrations by feature:** Rather than one flat list of
+registrations, `setupLocator()` calls `_registerOwnerFeature()` and
+`_registerVehicleFeature()` as separate private functions. This means adding a
+new feature is one new line in `setupLocator()` and one new private function —
+existing registrations are never touched.
+
+**Shared singletons across use cases:** Both `GetVehiclesUseCase` and
+`GetVehiclesByOwnerUseCase` call `getIt<VehicleRepository>()` in their factory
+functions. Because `VehicleRepository` is a `lazySingleton`, both use cases
+receive the exact same repository instance. One HTTP client, two use cases, zero
+duplication.
