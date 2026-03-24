@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moto_manage/core/constants/app_colors.dart';
 
 import 'config/Router/router.dart';
 import 'core/di/service_locator.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Moto Manage',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.bluishWhite),
         fontFamily: 'Outfit',
       ),
       routerConfig: router,

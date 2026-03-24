@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moto_manage/core/constants/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -8,11 +9,36 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller:controller,
-      decoration: InputDecoration(labelText: label),
-      keyboardType: type,
-      validator:(value)=> value==null || value.isEmpty ? "$label is Required": null,
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label :',
+            style: TextStyle(),
+          ),
+          TextFormField(
+            controller:controller,
+            decoration: InputDecoration(
+              hintText: "Enter your ${label.toLowerCase()}",
+              enabledBorder: buildOutlineInputBorder(),
+              focusedBorder:  buildOutlineInputBorder(),
+            ),
+            keyboardType: type,
+            validator:(value)=> value==null || value.isEmpty ? "$label is Required": null,
+          ),
+        ],
+      ),
     );
+  }
+
+  static OutlineInputBorder buildOutlineInputBorder() {
+    return OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+                color: AppColors.darkGrey
+            )
+        );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
 import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usercase.dart';
 import 'package:moto_manage/features/owner_management/presentation/widgets/custom_text_field.dart';
+import 'package:moto_manage/features/owner_management/presentation/widgets/wide_elevated_button.dart';
 
 import '../../../../core/di/service_locator.dart';
 
@@ -81,10 +82,11 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
       body: Form(
           key:_formKey,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(15),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextField(controller:_userNameController, label:"Username"),
                   CustomTextField(controller:_emailController, label:"Email",type: TextInputType.emailAddress),
@@ -93,18 +95,27 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                   CustomTextField(controller:_ageController, label:"Age",type: TextInputType.number),
 
                   // Gender Dropdown
+                  Text("Gender :"),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedGender,
                     items: ["male", "female", "other"].map((String value) {
                       return DropdownMenuItem(value: value, child: Text(value));
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedGender = val!),
-                    decoration: const InputDecoration(labelText: "Gender"),
-                  ),
+                    decoration: InputDecoration(
+                      enabledBorder: CustomTextField.buildOutlineInputBorder()
+                      ),
+                    ),
 
-                  ElevatedButton(
-                    onPressed:  _submitForm,
-                    child: const Text('Submit'),
+                  SizedBox(height: 20,),
+
+
+                  Center(
+                    child: WideElevatedButton(
+                        text: 'Submit',
+                        onPressed: (){
+                        _submitForm;
+                      })
                   ),
                 ],
 

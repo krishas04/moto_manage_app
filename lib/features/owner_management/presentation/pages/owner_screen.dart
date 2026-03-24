@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/core/constants/app_colors.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
 import 'package:moto_manage/features/owner_management/domain/usecases/get_owners_usecase.dart';
@@ -59,13 +61,30 @@ class _OwnerScreenState extends State<OwnerScreen> {
                 separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final owner = owners[index];
-                  return ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(owner.fullName!),
-                    subtitle: Text(owner.phoneNumber),
-                    onTap: (){
-                      context.push('/vehicles/${owner.id}');
-                    },
+                  return Container(
+                    decoration:BoxDecoration(
+                      color: AppColors.b,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: ListTile(
+                      leading: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundOffWhite,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/man.svg',
+                          width: 50,
+                          height: 50,
+                          ),
+                      ),
+                      title: Text(owner.fullName!),
+                      subtitle: Text(owner.phoneNumber),
+                      trailing: Icon(Icons.arrow_forward),
+                      onTap: (){
+                        context.push('/vehicles/${owner.id}');
+                      },
+                    ),
                   );
                 },
               );
@@ -75,7 +94,12 @@ class _OwnerScreenState extends State<OwnerScreen> {
             return const Center(child: Text("Something went wrong"));
           },
         ),
-        floatingActionButton: FloatingActionButton(onPressed: (){context.push('/users');},child: Icon(Icons.add),)
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: (){
+            context.push('/users');
+            },
+          label: Text('+ Create User'),
+        )
     );
   }
 }
