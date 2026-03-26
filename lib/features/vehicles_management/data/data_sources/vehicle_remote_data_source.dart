@@ -1,34 +1,23 @@
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-import 'package:moto_manage/core/constants/api_constants.dart';
-
+import '../../../../core/api/api_service.dart';
 import '../models/vehicle_model.dart';
 
 
+class VehicleRemoteDataSource extends BaseRemoteDataSource<VehicleModel>{
+  VehicleRemoteDataSource({required super.client});
 
-class VehicleRemoteDataSource{
   // Fetch All Vehicles
-  Future<List<VehicleModel>> fetchVehiclesFromApi() async {
-    final response = await http.get(Uri.parse('${ApiConstants.baseUrl}/vehicles/'));
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => VehicleModel.fromJson(json)).toList();
-    } else {
-      throw Exception("Failed to load vehicles");
-    }
+  Future<List<VehicleModel>> fetchVehicles() async{
+    return getList(
+        endpoint: '/vehicles/',
+        fromJson: (json)=>VehicleModel.fromJson(json));
   }
 
   //fetch vehicles for a specific owner
-  Future<List<VehicleModel>> fetchVehiclesByOwnerFromApi(String ownerId) async{
-    final response= await http.get(Uri.parse('${ApiConstants.baseUrl}/users/$ownerId/vehicles/'));
-
-    if(response.statusCode==200){
-      List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => VehicleModel.fromJson(json)).toList();
-    }else {
-      throw Exception("Failed to load vehicles for owner $ownerId");
-    }
+  Future<List<VehicleModel>> fetchVehiclesByOwner(String ownerId) async{
+    return getList(
+        endpoint: '/users/$ownerId/vehicles/',
+        fromJson: (json)=>VehicleModel.fromJson(json));
   }
+
 }

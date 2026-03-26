@@ -9,13 +9,13 @@ class VehicleRepositoryImpl implements VehicleRepository{
 
   @override
   Future<List<VehicleEntity>> getVehicles() async{
-    final vehicleModels = await vehicleRemoteDataSource.fetchVehiclesFromApi();
+    final vehicleModels = await vehicleRemoteDataSource.fetchVehicles();
     return vehicleModels.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<List<VehicleEntity>> getVehiclesByOwner(String ownerId) async{
-    final vehicleModels = await vehicleRemoteDataSource.fetchVehiclesByOwnerFromApi(ownerId);
+    final vehicleModels = await vehicleRemoteDataSource.fetchVehiclesByOwner(ownerId);
     return vehicleModels.map((model) => model.toEntity()).toList();
   }
 }

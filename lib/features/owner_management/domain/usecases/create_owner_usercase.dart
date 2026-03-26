@@ -7,6 +7,6 @@ class CreateOwnerUseCase{
   CreateOwnerUseCase(this.ownerRepository);
 
   Future<bool> call(OwnerEntity owner) async{
-    return await ownerRepository.createOwner(owner);
+    return await ownerRepository.makeOwner(owner);
   }
 }

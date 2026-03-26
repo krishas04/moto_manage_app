@@ -11,12 +11,12 @@ class OwnerRepositoryImpl implements OwnerRepository{
 
   @override
   Future<List<OwnerEntity>> getOwners() async{
-    return await remoteDataSource.fetchOwnersFromAPi();
+    return await remoteDataSource.fetchOwners();
   }
 
   @override
-  Future<bool> createOwner(OwnerEntity owner) async{
+  Future<bool> makeOwner(OwnerEntity owner) async{
     final ownerModel = OwnerModel.fromEntity(owner);
-    return await remoteDataSource.createOwnerFromApi(ownerModel);
+    return await remoteDataSource.createOwner(ownerModel);
   }
 }

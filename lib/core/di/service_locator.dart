@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
 import 'package:moto_manage/features/owner_management/data/data_sources/owner_remote_data_source.dart';
 import 'package:moto_manage/features/owner_management/data/repositories/owner_repository_impl.dart';
 import 'package:moto_manage/features/owner_management/domain/repository_interfaces/owner_repository_interface.dart';
@@ -14,7 +15,7 @@ final getIt = GetIt.instance;
 
 void registerOwnerFeature(){
   getIt.registerLazySingleton<OwnerRemoteDataSource>(
-        ()=> OwnerRemoteDataSource(),
+        ()=> OwnerRemoteDataSource(client: getIt<http.Client>()),
   );
 
   getIt.registerLazySingleton<OwnerRepository>(
@@ -32,7 +33,7 @@ void registerOwnerFeature(){
 
 void registerVehicleFeature(){
   getIt.registerLazySingleton<VehicleRemoteDataSource>(
-        ()=> VehicleRemoteDataSource(),
+        ()=> VehicleRemoteDataSource(client: getIt<http.Client>()),
   );
 
   getIt.registerLazySingleton<VehicleRepository>(
@@ -49,6 +50,7 @@ void registerVehicleFeature(){
 }
 
 void setupLocator(){
+  getIt.registerLazySingleton<http.Client>(() => http.Client());
   registerOwnerFeature();
   registerVehicleFeature();
 }

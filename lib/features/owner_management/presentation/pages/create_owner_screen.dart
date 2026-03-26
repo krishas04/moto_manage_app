@@ -93,6 +93,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                   CustomTextField(controller:_fNameController, label:"First Name"),
                   CustomTextField(controller:_lNameController, label:"Last Name"),
                   CustomTextField(controller:_ageController, label:"Age",type: TextInputType.number),
+                  CustomTextField(controller:_phoneController, label:"Phone Number",type: TextInputType.number),
 
                   // Gender Dropdown
                   Text("Gender :"),

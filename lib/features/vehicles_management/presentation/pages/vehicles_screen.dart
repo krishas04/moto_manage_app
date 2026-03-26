@@ -59,11 +59,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                     leading: Icon(Icons.bike_scooter),
                     title: Text(vehicle.vehicleType),
                     subtitle: Text('${vehicle.fuelType} | ${vehicle.make}'),
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context)=>VehiclesScreen()));
-                    },
+                    onTap: (){},
                   );
                 },
               );

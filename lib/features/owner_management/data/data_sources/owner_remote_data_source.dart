@@ -1,39 +1,23 @@
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-import 'package:moto_manage/core/constants/api_constants.dart';
-
+import '../../../../core/api/api_service.dart';
 import '../models/owner_model.dart';
 
-class OwnerRemoteDataSource{
+class OwnerRemoteDataSource extends BaseRemoteDataSource<OwnerModel>{
+  OwnerRemoteDataSource({required super.client});
 
   // fetch all users
-  Future<List<OwnerModel>> fetchOwnersFromAPi() async{
-    final response=await http.get(Uri.parse('${ApiConstants.baseUrl}/users/'));
-
-    if(response.statusCode==200){
-      // json string -> dart object
-      List<dynamic> data=jsonDecode(response.body);
-      //dart object -> OwnerModel
-      return data.map((json)=>OwnerModel.fromJson(json)).toList();
-    }else{
-      throw Exception('Failed to load users');
-    }
+  Future<List<OwnerModel>> fetchOwners() {
+    return getList(
+      endpoint: '/users/',
+      fromJson: (json) => OwnerModel.fromJson(json),
+    );
   }
 
-  //create owner
-  Future<bool> createOwnerFromApi(OwnerModel owner) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${ApiConstants.baseUrl}/users/'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(owner.toJson()),
-      );
-
-      return response.statusCode == 201;
-    } catch (e) {
-      throw Exception('API Error: $e');
-    }
+  Future<bool> createOwner(OwnerModel owner) {
+    return post(
+      endpoint: '/users/',
+      body: owner.toJson(),
+    );
   }
 
 }
