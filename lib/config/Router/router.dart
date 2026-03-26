@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/features/dashboard/presentation/pages/dashboard_screen.dart';
 import '../../features/owner_management/presentation/pages/create_owner_screen.dart';
 import '../../features/owner_management/presentation/pages/owner_screen.dart';
 import '../../features/vehicles_management/presentation/pages/vehicles_by_owner_screen.dart';
@@ -8,6 +9,10 @@ final router= GoRouter(
     routes: [
       GoRoute(
           path: '/',
+          builder: (context,state)=> DashboardScreen()
+      ),
+      GoRoute(
+          path: '/owners',
           builder: (context,state)=> OwnerScreen()
       ),
       GoRoute(

@@ -22,8 +22,8 @@ class CustomTextField extends StatelessWidget {
             controller:controller,
             decoration: InputDecoration(
               hintText: "Enter your ${label.toLowerCase()}",
-              enabledBorder: buildOutlineInputBorder(),
-              focusedBorder:  buildOutlineInputBorder(),
+              enabledBorder: buildOutlineInputBorder,
+              focusedBorder:  buildOutlineInputBorder,
             ),
             keyboardType: type,
             validator:(value)=> value==null || value.isEmpty ? "$label is Required": null,
@@ -33,12 +33,11 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  static OutlineInputBorder buildOutlineInputBorder() {
-    return OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+  static const OutlineInputBorder buildOutlineInputBorder = OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
             borderSide: BorderSide(
                 color: AppColors.darkGrey
             )
         );
-  }
+
 }

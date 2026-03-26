@@ -103,18 +103,17 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedGender = val!),
                     decoration: InputDecoration(
-                      enabledBorder: CustomTextField.buildOutlineInputBorder()
+                      enabledBorder: CustomTextField.buildOutlineInputBorder
                       ),
                     ),
 
                   SizedBox(height: 20,),
 
-
                   Center(
                     child: WideElevatedButton(
                         text: 'Submit',
                         onPressed: (){
-                        _submitForm;
+                        _submitForm();
                       })
                   ),
                 ],
