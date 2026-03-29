@@ -206,7 +206,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                     onChanged: (val) => setState(() => _selectedGender = val!),
                     decoration: InputDecoration(
                       enabledBorder: CustomTextField.buildOutlineInputBorder
-                      ),
+                      )
                     ),
 
                   SizedBox(height: 20,),

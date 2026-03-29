@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/di/service_locator.dart';
+import '../../domain/entities/owner.dart';
+import '../../domain/usecases/get_owners_usecase.dart';
+import '../../domain/usecases/update_owner_usecase.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/wide_elevated_button.dart';
 
 class UpdateOwnerScreen extends StatefulWidget {
   final String ownerId;
@@ -9,8 +17,308 @@ class UpdateOwnerScreen extends StatefulWidget {
 }
 
 class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
+  // Form controllers
+  final _userNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _fNameController = TextEditingController();
+  final _lNameController = TextEditingController();
+  final _ageController = TextEditingController();
+
+  String _selectedGender = "male";
+  bool _isLoading = true;
+  bool _isSaving = false;
+  OwnerEntity? _originalOwner;
+
+  final _formKey = GlobalKey<FormState>();
+  late final UpdateOwnerUseCase _updateOwnerUseCase = getIt<UpdateOwnerUseCase>();
+  late final GetOwnersUseCase _getOwnersUseCase = getIt<GetOwnersUseCase>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOwnerData();
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers
+    _userNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _fNameController.dispose();
+    _lNameController.dispose();
+    _ageController.dispose();
+    super.dispose();
+  }
+
+  // Load owner data from API
+  Future<void> _loadOwnerData() async {
+    try {
+      final owners = await _getOwnersUseCase.call();
+      // Convert widget.ownerId to int for comparison
+      final ownerIdInt = int.tryParse(widget.ownerId);
+      final owner = owners.firstWhere(
+            (owner) => owner.id == ownerIdInt,
+        orElse: () => throw Exception('Owner with ID ${widget.ownerId} not found'),
+      );
+
+      setState(() {
+        _originalOwner = owner;
+        _isLoading = false;
+
+        // Fill form fields with existing data
+        _userNameController.text = owner.username;
+        _emailController.text = owner.email;
+        _phoneController.text = owner.phoneNumber;
+        _fNameController.text = owner.firstName;
+        _lNameController.text = owner.lastName;
+        _ageController.text = owner.age.toString();
+        _selectedGender = owner.gender;
+      });
+    } catch (e) {
+      print('Error loading owner: $e');
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading owner: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+
+        // Go back after 2 seconds
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            context.pop();
+          }
+        });
+      }
+    }
+  }
+
+  // Validate and submit the form
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Form validation failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_originalOwner == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Owner data not loaded properly'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      // Show saving indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Updating owner...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      // Create updated owner entity
+      final updatedOwner = OwnerEntity(
+        id: _originalOwner!.id,
+        username: _userNameController.text.trim(),
+        email: _emailController.text.trim(),
+        phoneNumber: _phoneController.text.trim(),
+        firstName: _fNameController.text.trim(),
+        lastName: _lNameController.text.trim(),
+        age: int.parse(_ageController.text.trim()),
+        gender: _selectedGender,
+        // Preserve existing optional fields
+        fullName: _originalOwner!.fullName,
+        isActive: _originalOwner!.isActive,
+        dateJoined: _originalOwner!.dateJoined,
+        mobileNumber: _originalOwner!.mobileNumber,
+        address: _originalOwner!.address,
+      );
+
+      // Call update use case
+      final success = await _updateOwnerUseCase.call(updatedOwner);
+
+      // Hide loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Owner updated successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate back with success flag
+        if (mounted) {
+          Navigator.pop(context, true);
+        }
+      } else {
+        throw Exception('API returned false');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating owner: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Update Owner'),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          :Form(
+          key:_formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomTextField(
+                    controller:_userNameController,
+                    label:"Username",
+                    validator:  (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Username is required';
+                      }
+                      if (value.length < 3) {
+                        return 'Username must be at least 3 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                    controller:_emailController,
+                    label:"Email",
+                    type: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      if (!value.contains('@') || !value.contains('.')) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                    controller:_fNameController,
+                    label:"First Name",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'First name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                    controller:_lNameController,
+                    label:"Last Name",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Last name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                    controller:_ageController,
+                    label:"Age",
+                    type: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Age is required';
+                      }
+                      final age = int.tryParse(value);
+                      if (age == null) {
+                        return 'Please enter a valid number';
+                      }
+                      if (age < 18 || age > 100) {
+                        return 'Age must be between 18 and 100';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                    controller:_phoneController,
+                    label:"Phone Number",
+                    type: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Phone number is required';
+                      }
+                      if (value.length < 10) {
+                        return 'Please enter a valid phone number';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  // Gender Dropdown
+                  Text("Gender :"),
+                  DropdownButtonFormField<String>(
+                      initialValue: _selectedGender,
+                      items: ["male", "female", "other"].map((String value) {
+                        return DropdownMenuItem(value: value, child: Text(value));
+                      }).toList(),
+                      onChanged: (val) => setState(() => _selectedGender = val!),
+                      decoration: InputDecoration(
+                          enabledBorder: CustomTextField.buildOutlineInputBorder
+                      )
+                  ),
+
+                  SizedBox(height: 20,),
+
+                  Center(
+                      child: WideElevatedButton(
+                          text: _isSaving ? 'Updating...' : 'Update Owner',
+                          onPressed: _submitForm,
+                  ),
+                  ),
+
+
+              ]
+              ),
+            ),
+          )),
+    );
   }
 }
