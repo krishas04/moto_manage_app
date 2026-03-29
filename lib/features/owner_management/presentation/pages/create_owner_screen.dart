@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
-import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usercase.dart';
+import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usecase.dart';
 import 'package:moto_manage/features/owner_management/presentation/widgets/custom_text_field.dart';
 import 'package:moto_manage/features/owner_management/presentation/widgets/wide_elevated_button.dart';
 

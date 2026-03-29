@@ -80,7 +80,12 @@ class _OwnerScreenState extends State<OwnerScreen> {
                       ),
                       title: Text(owner.fullName!),
                       subtitle: Text(owner.phoneNumber),
-                      trailing: Icon(Icons.arrow_forward),
+                      trailing: GestureDetector(
+                          child: Icon(Icons.edit_note_outlined),
+                          onTap: () {
+                            context.push('/user/edit/${owner.id}');
+                          },
+                      ),
                       onTap: (){
                         context.push('/vehicles/${owner.id}');
                       },

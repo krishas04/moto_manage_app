@@ -19,5 +19,12 @@ class OwnerRemoteDataSource extends BaseRemoteDataSource<OwnerModel>{
       body: owner.toJson(),
     );
   }
+  Future<bool> editOwner(OwnerModel owner) {
+    return put(
+      endpoint: '/users/${owner.id}',
+      body: owner.toJson(),
+    );
+  }
+
 
 }

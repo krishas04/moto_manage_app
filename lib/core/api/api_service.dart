@@ -43,4 +43,38 @@ abstract class BaseRemoteDataSource<T>{
     }
   }
 
+  //full update an object at endpoint and returns true
+  Future<bool> put({
+    required String endpoint,
+    required Map<String, dynamic> body,
+    }) async {
+    try {
+      final response = await client.put(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+     return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('API Error at $endpoint: $e');
+    }
+  }
+
+  //partial update an object at endpoint and returns true
+  Future<bool> patch({
+    required String endpoint,
+    required Map<String, dynamic> body,
+    }) async {
+    try {
+      final response = await client.patch(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+     return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('API Error at $endpoint: $e');
+    }
+  }
+
 }

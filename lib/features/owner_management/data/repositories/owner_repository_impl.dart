@@ -19,4 +19,12 @@ class OwnerRepositoryImpl implements OwnerRepository{
     final ownerModel = OwnerModel.fromEntity(owner);
     return await remoteDataSource.createOwner(ownerModel);
   }
+
+  @override
+  Future<bool> updateOwner(OwnerEntity owner) async{
+    final ownerModel = OwnerModel.fromEntity(owner);
+    return await remoteDataSource.editOwner(ownerModel);
+  }
+
+
 }
