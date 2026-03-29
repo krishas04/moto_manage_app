@@ -77,4 +77,20 @@ abstract class BaseRemoteDataSource<T>{
     }
   }
 
+  //delete operation
+  Future<bool> delete({
+    required String endpoint,
+  }) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {"Content-Type": "application/json"},
+      );
+      return response.statusCode==204 || response.statusCode == 200;
+    } catch (e) {
+      throw Exception('API Error at $endpoint: $e');
+    }
+  }
+
+
 }

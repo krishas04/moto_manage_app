@@ -29,7 +29,9 @@ class OwnerModel extends OwnerEntity{
     lastName: json['last_name'],
     fullName: json['full_name'],
     isActive: json['is_active'],
-    dateJoined: DateTime.parse(json['date_joined']),
+    dateJoined: json['date_joined'] != null
+        ? DateTime.tryParse(json['date_joined'])
+        : null,
     mobileNumber: json['mobile_number'],
     address: json['address'],
     gender:json['gender'],

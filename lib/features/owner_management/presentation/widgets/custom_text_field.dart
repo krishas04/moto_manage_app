@@ -5,7 +5,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final TextInputType? type;
-  const CustomTextField({super.key, required this.controller,required this.label,this.type});
+  final String? Function(String?)? validator;
+  const CustomTextField({super.key, required this.controller,required this.label,this.type, this.validator});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,9 @@ class CustomTextField extends StatelessWidget {
               focusedBorder:  buildOutlineInputBorder,
             ),
             keyboardType: type,
-            validator:(value)=> value==null || value.isEmpty ? "$label is Required": null,
+            validator:(value){
+              return validator!(value);
+              },
           ),
         ],
       ),

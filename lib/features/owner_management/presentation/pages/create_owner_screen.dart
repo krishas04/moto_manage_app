@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
 import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usecase.dart';
@@ -26,6 +27,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   final _ageController = TextEditingController();
 
   String _selectedGender = "male";
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
   late final CreateOwnerUseCase createOwnerUseCase= getIt<CreateOwnerUseCase>();
@@ -46,29 +48,55 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Data')),
-      );
+      setState(() {
+        _isLoading = true;
 
-      final newOwner=OwnerEntity(
-        username: _userNameController.text,
-        email: _emailController.text,
-        phoneNumber: _phoneController.text,
-        firstName: _fNameController.text,
-        lastName: _lNameController.text,
-        age: int.parse(_ageController.text),
-        gender: _selectedGender,
-      );
+      });
 
-      final success= await createOwnerUseCase.call(newOwner);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      try{ final newOwner=OwnerEntity(
+            username: _userNameController.text.trim(),
+            email: _emailController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
+            firstName: _fNameController.text.trim(),
+            lastName: _lNameController.text.trim(),
+            age: int.parse(_ageController.text.trim()),
+            gender: _selectedGender,
+            );
 
-      if(success){
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User Created!")));
-      }else{
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error creating user")));
+            final success= await createOwnerUseCase.call(newOwner);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+            if(success){
+            if(mounted){
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Owner Created Successfully!"),
+            backgroundColor: Colors.green,
+            ));
+            }
+            }else{
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Failed to create owner"),
+            backgroundColor: Colors.red
+            ));
+            context.pop(true);
+            }
+          } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Error: $e"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
       }
-
+      finally {
+      if (mounted) {
+      setState(() {
+      _isLoading = false;
+      });
+      }
+      }
 
     }
   }
@@ -88,12 +116,85 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomTextField(controller:_userNameController, label:"Username"),
-                  CustomTextField(controller:_emailController, label:"Email",type: TextInputType.emailAddress),
-                  CustomTextField(controller:_fNameController, label:"First Name"),
-                  CustomTextField(controller:_lNameController, label:"Last Name"),
-                  CustomTextField(controller:_ageController, label:"Age",type: TextInputType.number),
-                  CustomTextField(controller:_phoneController, label:"Phone Number",type: TextInputType.number),
+                  CustomTextField(
+                      controller:_userNameController,
+                      label:"Username",
+                    validator:  (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Username is required';
+                      }
+                      if (value.length < 3) {
+                        return 'Username must be at least 3 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomTextField(
+                      controller:_emailController,
+                      label:"Email",
+                      type: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email is required';
+                        }
+                        if (!value.contains('@') || !value.contains('.')) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
+                      },
+                  ),
+                  CustomTextField(
+                      controller:_fNameController,
+                      label:"First Name",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'First name is required';
+                        }
+                        return null;
+                      },
+                  ),
+                  CustomTextField(
+                      controller:_lNameController,
+                      label:"Last Name",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Last name is required';
+                        }
+                        return null;
+                      },
+                  ),
+                  CustomTextField(
+                      controller:_ageController,
+                      label:"Age",
+                      type: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Age is required';
+                        }
+                        final age = int.tryParse(value);
+                        if (age == null) {
+                          return 'Please enter a valid number';
+                        }
+                        if (age < 18 || age > 100) {
+                          return 'Age must be between 18 and 100';
+                        }
+                        return null;
+                      },
+                  ),
+                  CustomTextField(
+                      controller:_phoneController,
+                      label:"Phone Number",
+                      type: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Phone number is required';
+                        }
+                        if (value.length < 10) {
+                          return 'Please enter a valid phone number';
+                        }
+                        return null;
+                      },
+                  ),
 
                   // Gender Dropdown
                   Text("Gender :"),
@@ -112,7 +213,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
 
                   Center(
                     child: WideElevatedButton(
-                        text: 'Submit',
+                        text: _isLoading ? 'Creating...' : 'Create Owner',
                         onPressed: (){
                         _submitForm();
                       })

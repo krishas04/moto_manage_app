@@ -23,8 +23,14 @@ class _OwnerScreenState extends State<OwnerScreen> {
   @override
   void initState() {
     super.initState();
-    futureOwners = getOwnersUseCase.call();
+    _loadOwners();
   }
+
+ void _loadOwners() {
+   setState(() {
+     futureOwners = getOwnersUseCase.call();
+   });
+ }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +38,12 @@ class _OwnerScreenState extends State<OwnerScreen> {
         appBar: AppBar(
           title: const Text('Vehicle Owners'),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _loadOwners,
+            ),
+          ],
         ),
         body: FutureBuilder<
             List<OwnerEntity>>(
@@ -83,7 +95,10 @@ class _OwnerScreenState extends State<OwnerScreen> {
                       trailing: GestureDetector(
                           child: Icon(Icons.edit_note_outlined),
                           onTap: () {
-                            context.push('/user/edit/${owner.id}');
+                            context.push('/user/edit/${owner.id}').then(
+                                    (_){
+                                      if (mounted) _loadOwners();
+                                    });
                           },
                       ),
                       onTap: (){
