@@ -19,7 +19,7 @@ class OwnerRemoteDataSource extends BaseRemoteDataSource<OwnerModel>{
     }
   }
 
-  Future<bool> createOwner(OwnerModel owner) {
+  Future<Map<String, dynamic>> createOwner(OwnerModel owner) {
     try{
       return post(
         endpoint: '/users/',
@@ -33,7 +33,7 @@ class OwnerRemoteDataSource extends BaseRemoteDataSource<OwnerModel>{
   }
 
 
-  Future<bool> editOwner(OwnerModel owner) {
+  Future<Map<String, dynamic>> editOwner(OwnerModel owner) {
     try{
       return put(
         endpoint: '/users/${owner.id}',

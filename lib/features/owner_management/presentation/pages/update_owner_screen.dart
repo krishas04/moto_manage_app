@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/reusable_widgets/custom_text_field.dart';
+import '../../../../core/reusable_widgets/wide_elevated_button.dart';
 import '../../domain/entities/owner.dart';
 import '../../domain/usecases/get_owners_usecase.dart';
 import '../../domain/usecases/update_owner_usecase.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/wide_elevated_button.dart';
 
 class UpdateOwnerScreen extends StatefulWidget {
   final String ownerId;
@@ -77,7 +77,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         _selectedGender = owner.gender;
       });
     } catch (e) {
-      print('Error loading owner: $e');
+      debugPrint('Error loading owner: $e');
       setState(() {
         _isLoading = false;
       });
@@ -155,12 +155,13 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
       );
 
       // Call update use case
-      final success = await _updateOwnerUseCase.call(updatedOwner);
+      final response = await _updateOwnerUseCase.call(updatedOwner);
+      final bool isSuccess = response.containsKey('id');
 
       // Hide loading snackbar
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-      if (success) {
+      if (isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Owner updated successfully!'),

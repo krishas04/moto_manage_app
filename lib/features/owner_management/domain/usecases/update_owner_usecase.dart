@@ -6,7 +6,7 @@ class UpdateOwnerUseCase{
 
   UpdateOwnerUseCase(this.ownerRepository);
 
-  Future<bool> call(OwnerEntity owner) async{
+  Future<Map<String, dynamic>> call(OwnerEntity owner) async{
     return await ownerRepository.updateOwner(owner);
   }
 }

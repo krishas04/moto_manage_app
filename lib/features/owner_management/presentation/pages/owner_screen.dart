@@ -4,36 +4,17 @@ import 'package:go_router/go_router.dart';
 import 'package:moto_manage/core/constants/app_colors.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
-import 'package:moto_manage/features/owner_management/domain/usecases/get_owners_usecase.dart';
+import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
+import 'package:provider/provider.dart';
 
-import '../../../../core/di/service_locator.dart';
 
-
-class OwnerScreen extends StatefulWidget {
+class OwnerScreen extends StatelessWidget {
   const OwnerScreen({super.key});
 
   @override
-  State<OwnerScreen> createState() => _OwnerScreenState();
-}
-
-class _OwnerScreenState extends State<OwnerScreen> {
- late final GetOwnersUseCase getOwnersUseCase = getIt<GetOwnersUseCase>();
-  late Future<List<OwnerEntity>> futureOwners;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadOwners();
-  }
-
- void _loadOwners() {
-   setState(() {
-     futureOwners = getOwnersUseCase.call();
-   });
- }
-
-  @override
   Widget build(BuildContext context) {
+    final notifier= context.watch<OwnerNotifier>();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Vehicle Owners'),
@@ -41,79 +22,11 @@ class _OwnerScreenState extends State<OwnerScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: _loadOwners,
+              onPressed: ()=>_loadOwners(context),
             ),
           ],
         ),
-        body: FutureBuilder<
-            List<OwnerEntity>>(
-          future: futureOwners,
-          builder: (context, snapshot) {
-            // Waiting for data
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            // Error occurred
-            else if (snapshot.hasError) {
-              return Center(child: Text("Error: ${snapshot.error}"));
-            }
-
-            // Data received successfully
-            else if (snapshot.hasData) {
-              final owners = snapshot.data!;
-
-              // Handle empty list case
-              if (owners.isEmpty) {
-                return const Center(child: Text("No owners found."));
-              }
-
-              return ListView.separated(
-                itemCount: owners.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final owner = owners[index];
-                  return Container(
-                    decoration:BoxDecoration(
-                      color: AppColors.b,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: ListTile(
-                      leading: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundOffWhite,
-                          shape: BoxShape.circle,
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/images/man.svg',
-                          width: 50,
-                          height: 50,
-                          ),
-                      ),
-                      title: Text(owner.fullName!),
-                      subtitle: Text(owner.phoneNumber),
-                      trailing: GestureDetector(
-                          child: Icon(Icons.edit_note_outlined),
-                          onTap: () {
-                            context.push('/user/edit/${owner.id}').then(
-                                    (_){
-                                      if (mounted) _loadOwners();
-                                    });
-                          },
-                      ),
-                      onTap: (){
-                        context.push('/vehicles/${owner.id}');
-                      },
-                    ),
-                  );
-                },
-              );
-            }
-
-            // If nothing matches
-            return const Center(child: Text("Something went wrong"));
-          },
-        ),
+        body: _buildBody(context,notifier),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: (){
             context.push('/users');
@@ -121,5 +34,109 @@ class _OwnerScreenState extends State<OwnerScreen> {
           label: Text('+ Create User'),
         )
     );
+  }
+
+  Widget _buildBody(BuildContext context, OwnerNotifier notifier) {
+    // Show loading if loading and no data
+    if (notifier.isLoading && notifier.owners.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Show error if there's an error message
+    if (notifier.errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Error: ${notifier.errorMessage}",
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _loadOwners(context),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show empty state if no owners
+    if (notifier.owners.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.people_outline, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              "No owners found.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show list of owners
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: notifier.owners.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final owner = notifier.owners[index];
+        return _buildOwnerTile(context, owner);
+      },
+    );
+  }
+
+  // Separate method for owner tile
+  Widget _buildOwnerTile(BuildContext context, OwnerEntity owner) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.b,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Container(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.bluishWhite,
+          ),
+          padding: const EdgeInsets.all(8),
+          child: SvgPicture.asset(
+            'assets/images/man.svg',
+            width: 30,
+            height: 30,
+          ),
+        ),
+        title: Text(
+          owner.fullName ?? 'Unknown',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(owner.phoneNumber),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit_note_outlined),
+          onPressed: () {
+            context.push('/user/edit/${owner.id}').then((_) {
+              if (context.mounted) {
+                _loadOwners(context);
+              }
+            });
+          },
+        ),
+        onTap: () {
+          context.push('/vehicles/${owner.id}');
+        },
+      ),
+    );
+  }
+
+  // Method to load owners
+  void _loadOwners(BuildContext context) {
+    final notifier = context.read<OwnerNotifier>();
+    notifier.loadOwners();
   }
 }

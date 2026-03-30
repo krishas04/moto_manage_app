@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
-import 'package:moto_manage/features/owner_management/domain/usecases/create_owner_usecase.dart';
-import 'package:moto_manage/features/owner_management/presentation/widgets/custom_text_field.dart';
-import 'package:moto_manage/features/owner_management/presentation/widgets/wide_elevated_button.dart';
+import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
+import 'package:provider/provider.dart';
 
-import '../../../../core/di/service_locator.dart';
+import '../../../../core/reusable_widgets/custom_text_field.dart';
+import '../../../../core/reusable_widgets/wide_elevated_button.dart';
+
 
 
 class CreateOwnerScreen extends StatefulWidget {
@@ -27,11 +28,8 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   final _ageController = TextEditingController();
 
   String _selectedGender = "male";
-  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-  late final CreateOwnerUseCase createOwnerUseCase= getIt<CreateOwnerUseCase>();
-
 
   @override
   void dispose() {
@@ -48,11 +46,6 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
 
-      setState(() {
-        _isLoading = true;
-
-      });
-
       try{ final newOwner=OwnerEntity(
             username: _userNameController.text.trim(),
             email: _emailController.text.trim(),
@@ -63,21 +56,21 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
             gender: _selectedGender,
             );
 
-            final success= await createOwnerUseCase.call(newOwner);
+            final success= await context.read<OwnerNotifier>().createOwner(newOwner);
+
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            if (!mounted) return;
 
             if(success){
-            if(mounted){
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Owner Created Successfully!"),
-            backgroundColor: Colors.green,
-            ));
-            }
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Owner Created Successfully!"),
+              backgroundColor: Colors.green,
+              ));
             }else{
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Failed to create owner"),
-            backgroundColor: Colors.red
-            ));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Failed to create owner"),
+              backgroundColor: Colors.red
+              ));
             context.pop(true);
             }
           } catch (e) {
@@ -90,19 +83,12 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                 );
               }
       }
-      finally {
-      if (mounted) {
-      setState(() {
-      _isLoading = false;
-      });
-      }
-      }
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<OwnerNotifier>().isLoading;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create a owner'),
@@ -213,7 +199,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
 
                   Center(
                     child: WideElevatedButton(
-                        text: _isLoading ? 'Creating...' : 'Create Owner',
+                        text: isLoading ? 'Creating...' : 'Create Owner',
                         onPressed: (){
                         _submitForm();
                       })

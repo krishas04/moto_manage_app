@@ -6,7 +6,7 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final TextInputType? type;
   final String? Function(String?)? validator;
-  const CustomTextField({super.key, required this.controller,required this.label,this.type, this.validator});
+  const CustomTextField({super.key, required this.controller,required this.label,this.type, this.validator,});
 
   @override
   Widget build(BuildContext context) {
