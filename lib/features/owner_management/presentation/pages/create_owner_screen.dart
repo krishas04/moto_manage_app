@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/core/utils/validators.dart';
+import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
 import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
@@ -56,7 +58,8 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
             gender: _selectedGender,
             );
 
-            final success= await context.read<OwnerNotifier>().createOwner(newOwner);
+        final token= context.read<AuthNotifier>().accessToken;
+        final success= await context.read<OwnerNotifier>().createOwner(newOwner,token!);
 
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             if (!mounted) return;
@@ -103,97 +106,41 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextField(
-                      controller:_userNameController,
-                      label:"Username",
-                    validator:  (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Username is required';
-                      }
-                      if (value.length < 3) {
-                        return 'Username must be at least 3 characters';
-                      }
-                      return null;
-                    },
+                    controller: _userNameController,
+                    label: 'Username',
+                    validator:Validators.validateUsername,
                   ),
                   CustomTextField(
-                      controller:_emailController,
-                      label:"Email",
-                      type: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Email is required';
-                        }
-                        if (!value.contains('@') || !value.contains('.')) {
-                          return 'Enter a valid email';
-                        }
-                        return null;
-                      },
+                    controller: _emailController,
+                    label: 'Email',
+                    validator: Validators.validateEmail,
                   ),
                   CustomTextField(
-                      controller:_fNameController,
-                      label:"First Name",
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'First name is required';
-                        }
-                        return null;
-                      },
+                    controller: _phoneController,
+                    label: 'Phone number',
+                    type: TextInputType.phone,
+                    validator: Validators.validatePhoneNum,
                   ),
                   CustomTextField(
-                      controller:_lNameController,
-                      label:"Last Name",
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Last name is required';
-                        }
-                        return null;
-                      },
+                    controller: _ageController,
+                    label: 'Age',
+                    type: TextInputType.number,
+                    validator: Validators.validateAge,
                   ),
-                  CustomTextField(
-                      controller:_ageController,
-                      label:"Age",
-                      type: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Age is required';
-                        }
-                        final age = int.tryParse(value);
-                        if (age == null) {
-                          return 'Please enter a valid number';
-                        }
-                        if (age < 18 || age > 100) {
-                          return 'Age must be between 18 and 100';
-                        }
-                        return null;
-                      },
-                  ),
-                  CustomTextField(
-                      controller:_phoneController,
-                      label:"Phone Number",
-                      type: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Phone number is required';
-                        }
-                        if (value.length < 10) {
-                          return 'Please enter a valid phone number';
-                        }
-                        return null;
-                      },
-                  ),
-
-                  // Gender Dropdown
                   Text("Gender :"),
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedGender,
-                    items: ["male", "female", "other"].map((String value) {
-                      return DropdownMenuItem(value: value, child: Text(value));
-                    }).toList(),
-                    onChanged: (val) => setState(() => _selectedGender = val!),
-                    decoration: InputDecoration(
-                      enabledBorder: CustomTextField.buildOutlineInputBorder
+                      initialValue: _selectedGender,
+                      items: ["male", "female", "other"].map((String value) {
+                        return DropdownMenuItem(value: value, child: Text(value));
+                      }).toList(),
+                      onChanged: (val) => setState(() => _selectedGender = val!),
+                      decoration: InputDecoration(
+                        enabledBorder: CustomTextField.buildOutlineInputBorder,
+                        focusedBorder: CustomTextField.buildOutlineInputBorder,
+                        focusedErrorBorder: CustomTextField.buildOutlineInputBorder,
+                        errorBorder: CustomTextField.buildOutlineInputBorder,
                       )
-                    ),
+                  ),
 
                   SizedBox(height: 20,),
 

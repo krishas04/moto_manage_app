@@ -28,54 +28,59 @@ class OwnerNotifier extends ChangeNotifier{
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> loadOwners() async {
-    _isLoading = true;
+  void _setLoading(bool v) {
+    _isLoading = v;
+    notifyListeners();
+  }
+
+  Future<void> loadOwners(String token) async {
+    _setLoading(true);
     _errorMessage = null;
     notifyListeners();  // ← widgets rebuild here (shows spinner)
     try {
-      _owners = await _getOwnersUseCase.call();
+      _owners = await _getOwnersUseCase.call(token);
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners(); // ← widgets rebuild here (shows list or error)
     }
   }
 
-  Future<bool> createOwner(OwnerEntity owner) async {
-    _isLoading = true;
+  Future<bool> createOwner(OwnerEntity owner,String token) async {
+    _setLoading(true);
     notifyListeners();
     try {
-      final response = await _createOwnerUseCase.call(owner);
+      final response = await _createOwnerUseCase.call(owner,token);
       final bool isSuccess = response.containsKey('id');
       if (isSuccess) {
-        await loadOwners();
+        await loadOwners(token);
       }
       return isSuccess;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     }finally{
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners();
     }
   }
 
-  Future<bool> editOwner(OwnerEntity owner) async {
-    _isLoading = true;
+  Future<bool> editOwner(OwnerEntity owner,String token) async {
+    _setLoading(true);
     notifyListeners();
     try {
-      final response = await _updateOwnerUseCase.call(owner);
+      final response = await _updateOwnerUseCase.call(owner, token);
       final bool isSuccess = response.containsKey('id');
       if (isSuccess) {
-        await loadOwners();
+        await loadOwners(token);
       }
       return isSuccess;
     } catch (e) {
       _errorMessage = e.toString();
       return false;
     }finally{
-      _isLoading = false;
+      _setLoading(false);
       notifyListeners();
     }
   }

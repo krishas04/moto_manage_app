@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moto_manage/core/constants/app_colors.dart';
+import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
 import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
@@ -136,7 +137,8 @@ class OwnerScreen extends StatelessWidget {
 
   // Method to load owners
   void _loadOwners(BuildContext context) {
+    final token= context.read<AuthNotifier>().accessToken;
     final notifier = context.read<OwnerNotifier>();
-    notifier.loadOwners();
+    notifier.loadOwners(token!);
   }
 }

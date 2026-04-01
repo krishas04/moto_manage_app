@@ -1,5 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:moto_manage/features/authentication/data/datasources/auth_remote_data_source.dart';
+import 'package:moto_manage/features/authentication/data/repositories/auth_repository_impl.dart';
+import 'package:moto_manage/features/authentication/domain/repository_interfaces/auth_repository_interface.dart';
+import 'package:moto_manage/features/authentication/domain/usecases/auth_usecase.dart';
 import 'package:moto_manage/features/owner_management/data/data_sources/owner_remote_data_source.dart';
 import 'package:moto_manage/features/owner_management/data/repositories/owner_repository_impl.dart';
 import 'package:moto_manage/features/owner_management/domain/repository_interfaces/owner_repository_interface.dart';
@@ -14,6 +18,32 @@ import 'package:moto_manage/features/vehicles_management/domain/usecases/get_veh
 import '../../features/owner_management/domain/usecases/update_owner_usecase.dart';
 
 final getIt = GetIt.instance;
+
+void registerAuthFeature(){
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+        ()=> AuthRemoteDataSource(client: getIt<http.Client>()),
+  );
+
+  getIt.registerLazySingleton<AuthRepository>(
+        ()=> AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+  );
+
+  getIt.registerLazySingleton<LoginUseCase>(
+        ()=> LoginUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<RegisterUseCase>(
+          ()=> RegisterUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<LogoutUseCase>(
+          ()=> LogoutUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<RestoreSessionUseCase>(
+          ()=> RestoreSessionUseCase(getIt<AuthRepository>()),
+  );
+}
 
 void registerOwnerFeature(){
   getIt.registerLazySingleton<OwnerRemoteDataSource>(
@@ -59,4 +89,5 @@ void setupLocator(){
   getIt.registerLazySingleton<http.Client>(() => http.Client());
   registerOwnerFeature();
   registerVehicleFeature();
+  registerAuthFeature();
 }

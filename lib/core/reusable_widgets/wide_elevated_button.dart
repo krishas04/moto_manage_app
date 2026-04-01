@@ -18,6 +18,9 @@ class WideElevatedButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: backGroundColor,
             foregroundColor: textColor,
+            side: BorderSide(
+                color: AppColors.tGrey,
+                width:0.15 )
           ),
           child: Text(text),
       ),

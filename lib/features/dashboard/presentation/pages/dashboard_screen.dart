@@ -4,8 +4,10 @@ import 'package:moto_manage/features/dashboard/presentation/widgets/owner_card_w
 import 'package:moto_manage/features/dashboard/presentation/widgets/stat_card.dart';
 import 'package:moto_manage/features/dashboard/presentation/widgets/vehicle_card_widget.dart';
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../authentication/presentation/statemanagement/auth_notifier.dart';
 import '../../../owner_management/domain/usecases/get_owners_usecase.dart';
 import '../../../vehicles_management/domain/entities/vehicle.dart';
 import '../../../vehicles_management/domain/usecases/get_vehicles_usecase.dart';
@@ -29,9 +31,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState(){
     super.initState();
+    final token = context.read<AuthNotifier>().accessToken;
     futureVehicles=getVehiclesUseCase.call() ;
-    futureOwners=getOwnersUseCase.call();
+    futureOwners=getOwnersUseCase.call(token!);
   }
+
 
   @override
   Widget build(BuildContext context) {

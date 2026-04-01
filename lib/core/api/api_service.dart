@@ -117,7 +117,7 @@ abstract class BaseRemoteDataSource<T>{
     }
   }
 
-  /// Multipart POST for image uploads
+  // Multipart POST for image uploads
   Future<Map<String, dynamic>> multipartPost({
     required String endpoint,
     required Map<String, String> fields,

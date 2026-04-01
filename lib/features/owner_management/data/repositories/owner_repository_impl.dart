@@ -10,20 +10,20 @@ class OwnerRepositoryImpl implements OwnerRepository{
   OwnerRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<OwnerEntity>> getOwners() async{
-    return await remoteDataSource.fetchOwners();
+  Future<List<OwnerEntity>> getOwners(String token) async{
+    return await remoteDataSource.fetchOwners(token);
   }
 
   @override
-  Future<Map<String, dynamic>> makeOwner(OwnerEntity owner) async{
+  Future<Map<String, dynamic>> makeOwner(OwnerEntity owner, String token) async{
     final ownerModel = OwnerModel.fromEntity(owner);
-    return await remoteDataSource.createOwner(ownerModel);
+    return await remoteDataSource.createOwner(ownerModel, token);
   }
 
   @override
-  Future<Map<String, dynamic>> updateOwner(OwnerEntity owner) async{
+  Future<Map<String, dynamic>> updateOwner(OwnerEntity owner, String token) async{
     final ownerModel = OwnerModel.fromEntity(owner);
-    return await remoteDataSource.editOwner(ownerModel);
+    return await remoteDataSource.editOwner(ownerModel, token);
   }
 
 

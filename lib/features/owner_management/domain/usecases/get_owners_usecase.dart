@@ -6,7 +6,7 @@ class GetOwnersUseCase{
 
   GetOwnersUseCase(this.ownerRepository);
 
-  Future<List<OwnerEntity>> call() async{
-    return await ownerRepository.getOwners();
+  Future<List<OwnerEntity>> call(String token) async{
+    return await ownerRepository.getOwners(token);
   }
 }

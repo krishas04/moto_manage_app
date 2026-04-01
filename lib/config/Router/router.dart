@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/features/authentication/presentation/pages/login_screen.dart';
+import 'package:moto_manage/features/authentication/presentation/pages/register_screen.dart';
 import 'package:moto_manage/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:moto_manage/features/owner_management/presentation/pages/update_owner_screen.dart';
 import '../../features/owner_management/presentation/pages/create_owner_screen.dart';
@@ -7,9 +9,10 @@ import '../../features/vehicles_management/presentation/pages/vehicles_by_owner_
 import '../../features/vehicles_management/presentation/pages/vehicles_screen.dart';
 
 final router= GoRouter(
+      initialLocation: '/register',
     routes: [
       GoRoute(
-          path: '/',
+          path: '/dashboard',
           builder: (context,state)=> DashboardScreen()
       ),
       GoRoute(
@@ -37,6 +40,14 @@ final router= GoRouter(
             final id=state.pathParameters['ownerId']!;
             return VehiclesByOwnerScreen(ownerId: id);
           }
+      ),
+      GoRoute(
+          path: '/login',
+          builder: (context,state) => const LoginScreen()
+      ),
+      GoRoute(
+          path: '/register',
+          builder: (context,state) => const RegisterScreen()
       ),
 
 ]);

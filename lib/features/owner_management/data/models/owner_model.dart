@@ -6,7 +6,7 @@ class OwnerModel extends OwnerEntity{
     required super.username,
     required super.email,
     required super.phoneNumber,
-    required super.age,
+    super.age,
     required super.firstName,
     required super.lastName,
     super.fullName,

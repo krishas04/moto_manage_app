@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/reusable_widgets/custom_text_field.dart';
 import '../../../../core/reusable_widgets/wide_elevated_button.dart';
+import '../../../authentication/presentation/statemanagement/auth_notifier.dart';
 import '../../domain/entities/owner.dart';
 import '../../domain/usecases/get_owners_usecase.dart';
 import '../../domain/usecases/update_owner_usecase.dart';
@@ -34,10 +36,14 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
   late final UpdateOwnerUseCase _updateOwnerUseCase = getIt<UpdateOwnerUseCase>();
   late final GetOwnersUseCase _getOwnersUseCase = getIt<GetOwnersUseCase>();
 
+  // initState can't use context.read safely before build — use didChangeDependencies:
   @override
-  void initState() {
-    super.initState();
-    _loadOwnerData();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isLoading) {  // only run once
+      final token = context.read<AuthNotifier>().accessToken!;
+      _loadOwnerData(token);
+    }
   }
 
   @override
@@ -53,9 +59,9 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
   }
 
   // Load owner data from API
-  Future<void> _loadOwnerData() async {
+  Future<void> _loadOwnerData(String token) async {
     try {
-      final owners = await _getOwnersUseCase.call();
+      final owners = await _getOwnersUseCase.call(token);
       // Convert widget.ownerId to int for comparison
       final ownerIdInt = int.tryParse(widget.ownerId);
       final owner = owners.firstWhere(
@@ -155,7 +161,8 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
       );
 
       // Call update use case
-      final response = await _updateOwnerUseCase.call(updatedOwner);
+      final token= context.read<AuthNotifier>().accessToken;
+      final response = await _updateOwnerUseCase.call(updatedOwner,token!);
       final bool isSuccess = response.containsKey('id');
 
       // Hide loading snackbar
