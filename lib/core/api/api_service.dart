@@ -29,8 +29,18 @@ abstract class BaseRemoteDataSource<T>{
       headers: _authHeaders(token),
     );
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map<T>((item) => fromJson(item)).toList();
+      final dynamic decodedBody=jsonDecode(response.body);
+      List<dynamic> listData;
+      if(decodedBody is List){
+        listData=decodedBody;
+      }
+      if(decodedBody is Map<String,dynamic>){
+        listData = decodedBody['results'] ?? [];
+      }
+      else{
+        listData=[];
+      }
+      return listData.map<T>((item) => fromJson(item as Map<String, dynamic>)).toList();
     } else {
       throw ApiException(response.statusCode, response.body);
     }
