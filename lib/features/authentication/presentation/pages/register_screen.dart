@@ -4,6 +4,7 @@ import 'package:moto_manage/core/reusable_widgets/custom_text_field.dart';
 import 'package:moto_manage/core/utils/validators.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/reusable_widgets/wide_elevated_button.dart';
 import '../statemanagement/auth_notifier.dart';
@@ -67,24 +68,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created! Please log in.'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Account created! Please log in.'),
+          backgroundColor: AppColors.success,
         ),
       );
       context.go('/login');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(notifier.errorMessage ?? 'Registration failed'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // if fieldErrors are found then snackbar is not shown as fieldErrors are shown on respective fields
+        if(notifier.fieldErrors==null){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(notifier.errorMessage ?? 'Registration failed'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authNotifier = context.watch<AuthNotifier>();
     final isLoading = context.select<AuthNotifier, bool>(
           (n) => n.status == AuthStatus.loading,
     );
@@ -105,11 +110,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _userNameController,
                     label: 'Username',
                     validator:Validators.validateUsername,
+                    errorText:authNotifier.fieldErrors?['username'],
                 ),
                 CustomTextField(
                     controller: _emailController,
                     label: 'Email',
                     validator: Validators.validateEmail,
+                    errorText:authNotifier.fieldErrors?['email'],
                 ),
                 CustomTextField(
                     controller: _passwordController,
@@ -171,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     )
                 ),
 
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
 
                 Center(
                     child: WideElevatedButton(
@@ -180,6 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _submit();
                         })
                 ),
+                const SizedBox(height: 20,),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -191,6 +199,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 350,),
               ],
             ),
           ),

@@ -7,7 +7,8 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? type;
   final String? Function(String?)? validator;
   final bool isPassword;
-  const CustomTextField({super.key, required this.controller,required this.label,this.type, this.validator, this.isPassword=false});
+  final String? errorText;
+  const CustomTextField({super.key, required this.controller,required this.label,this.type, this.validator, this.isPassword=false,this.errorText});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -18,7 +19,6 @@ class CustomTextField extends StatefulWidget {
                 color: AppColors.darkGrey
             )
         );
-
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
@@ -38,6 +38,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             controller:widget.controller,
             decoration: InputDecoration(
               hintText: widget.isPassword?'********':"Enter your ${widget.label.toLowerCase()}",
+              errorText: widget.errorText,
               enabledBorder: CustomTextField.buildOutlineInputBorder,
               focusedBorder:  CustomTextField.buildOutlineInputBorder,
               focusedErrorBorder: CustomTextField.buildOutlineInputBorder,
@@ -48,7 +49,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           _obscureText
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                        color: AppColors.tGrey,
+                        color: AppColors.secondary,
                       ),
                       onPressed: (){
                         setState(() {
