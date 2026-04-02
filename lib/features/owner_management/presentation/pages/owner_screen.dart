@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moto_manage/core/constants/app_colors.dart';
+import 'package:moto_manage/core/constants/app_text_styles.dart';
 import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
 
 import 'package:moto_manage/features/owner_management/domain/entities/owner.dart';
@@ -9,8 +10,22 @@ import 'package:moto_manage/features/owner_management/presentation/state_managem
 import 'package:provider/provider.dart';
 
 
-class OwnerScreen extends StatelessWidget {
+class OwnerScreen extends StatefulWidget {
   const OwnerScreen({super.key});
+
+  @override
+  State<OwnerScreen> createState() => _OwnerScreenState();
+}
+
+class _OwnerScreenState extends State<OwnerScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // This triggers the data load as soon as the screen is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadOwners(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +33,7 @@ class OwnerScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Vehicle Owners'),
+          title: Text('Vehicle Owners',style: AppTextStyles.heading,),
           centerTitle: true,
           actions: [
             IconButton(
@@ -97,14 +112,14 @@ class OwnerScreen extends StatelessWidget {
   Widget _buildOwnerTile(BuildContext context, OwnerEntity owner) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.b,
+        color: AppColors.lightGrey,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         leading: Container(
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.bluishWhite,
+            color: AppColors.background,
           ),
           padding: const EdgeInsets.all(8),
           child: SvgPicture.asset(
@@ -117,7 +132,7 @@ class OwnerScreen extends StatelessWidget {
           owner.fullName ?? 'Unknown',
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(owner.phoneNumber),
+        subtitle: Text(owner.mobileNumber),
         trailing: IconButton(
           icon: const Icon(Icons.edit_note_outlined),
           onPressed: () {

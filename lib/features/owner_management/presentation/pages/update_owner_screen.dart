@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/core/reusable_widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/reusable_widgets/custom_text_field.dart';
 import '../../../../core/reusable_widgets/wide_elevated_button.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../authentication/presentation/statemanagement/auth_notifier.dart';
 import '../../domain/entities/owner.dart';
 import '../../domain/usecases/get_owners_usecase.dart';
@@ -22,7 +25,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
   // Form controllers
   final _userNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _mobileNumController = TextEditingController();
   final _fNameController = TextEditingController();
   final _lNameController = TextEditingController();
   final _ageController = TextEditingController();
@@ -51,7 +54,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
     // Clean up controllers
     _userNameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
+    _mobileNumController.dispose();
     _fNameController.dispose();
     _lNameController.dispose();
     _ageController.dispose();
@@ -76,7 +79,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         // Fill form fields with existing data
         _userNameController.text = owner.username;
         _emailController.text = owner.email;
-        _phoneController.text = owner.phoneNumber;
+        _mobileNumController.text = owner.mobileNumber;
         _fNameController.text = owner.firstName;
         _lNameController.text = owner.lastName;
         _ageController.text = owner.age.toString();
@@ -92,7 +95,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error loading owner: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -113,7 +116,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Form validation failed'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -123,7 +126,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Owner data not loaded properly'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -147,7 +150,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         id: _originalOwner!.id,
         username: _userNameController.text.trim(),
         email: _emailController.text.trim(),
-        phoneNumber: _phoneController.text.trim(),
+        mobileNumber: _mobileNumController.text.trim(),
         firstName: _fNameController.text.trim(),
         lastName: _lNameController.text.trim(),
         age: int.parse(_ageController.text.trim()),
@@ -156,7 +159,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         fullName: _originalOwner!.fullName,
         isActive: _originalOwner!.isActive,
         dateJoined: _originalOwner!.dateJoined,
-        mobileNumber: _originalOwner!.mobileNumber,
+        phoneNumber: _originalOwner!.phoneNumber,
         address: _originalOwner!.address,
       );
 
@@ -172,7 +175,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Owner updated successfully!'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
             duration: Duration(seconds: 2),
           ),
         );
@@ -188,7 +191,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error updating owner: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
           duration: const Duration(seconds: 3),
         ),
       );
@@ -206,9 +209,7 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Update Owner'),
-      ),
+      appBar: CustomAppBar(title: 'Update Owner'),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           :Form(
@@ -221,83 +222,36 @@ class _UpdateOwnerScreenState extends State<UpdateOwnerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextField(
-                    controller:_userNameController,
-                    label:"Username",
-                    validator:  (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Username is required';
-                      }
-                      if (value.length < 3) {
-                        return 'Username must be at least 3 characters';
-                      }
-                      return null;
-                    },
+                    controller: _userNameController,
+                    label: 'Username',
+                    validator:Validators.validateUsername,
                   ),
                   CustomTextField(
-                    controller:_emailController,
-                    label:"Email",
-                    type: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email is required';
-                      }
-                      if (!value.contains('@') || !value.contains('.')) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
+                    controller: _emailController,
+                    label: 'Email',
+                    validator: Validators.validateEmail,
                   ),
                   CustomTextField(
-                    controller:_fNameController,
-                    label:"First Name",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'First name is required';
-                      }
-                      return null;
-                    },
+                    controller: _mobileNumController,
+                    label: 'Mobile number',
+                    type: TextInputType.phone,
+                    validator: Validators.validateMobileNum,
                   ),
                   CustomTextField(
-                    controller:_lNameController,
-                    label:"Last Name",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Last name is required';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomTextField(
-                    controller:_ageController,
-                    label:"Age",
+                    controller: _ageController,
+                    label: 'Age',
                     type: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Age is required';
-                      }
-                      final age = int.tryParse(value);
-                      if (age == null) {
-                        return 'Please enter a valid number';
-                      }
-                      if (age < 18 || age > 100) {
-                        return 'Age must be between 18 and 100';
-                      }
-                      return null;
-                    },
+                    validator: Validators.validateAge,
                   ),
                   CustomTextField(
-                    controller:_phoneController,
-                    label:"Phone Number",
-                    type: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Phone number is required';
-                      }
-                      if (value.length < 10) {
-                        return 'Please enter a valid phone number';
-                      }
-                      return null;
-                    },
+                    controller: _fNameController,
+                    label: 'First name',
+                    validator: (value) => Validators.validateRequired(value, "First name"),
+                  ),
+                  CustomTextField(
+                    controller: _lNameController,
+                    label: 'Last name',
+                    validator: (value) => Validators.validateRequired(value, "Last name"),
                   ),
 
                   // Gender Dropdown

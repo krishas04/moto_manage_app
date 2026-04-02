@@ -48,7 +48,7 @@ class Validators{
   // Phone validator
   static String? validatePhoneNum(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Phone number is required';
+      return null;
     }
     if (value.length < 9 || value.length > 9) {
       return 'Please enter a valid phone number';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moto_manage/core/reusable_widgets/custom_appbar.dart';
 import 'package:moto_manage/core/utils/validators.dart';
 import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
 
@@ -7,6 +8,7 @@ import 'package:moto_manage/features/owner_management/domain/entities/owner.dart
 import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/reusable_widgets/custom_text_field.dart';
 import '../../../../core/reusable_widgets/wide_elevated_button.dart';
 
@@ -24,7 +26,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   // Controllers for all fields
   final _userNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _mobileNumController = TextEditingController();
   final _fNameController = TextEditingController();
   final _lNameController = TextEditingController();
   final _ageController = TextEditingController();
@@ -38,7 +40,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
     // Clean up the controller when the widget is disposed.
     _userNameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
+    _mobileNumController.dispose();
     _fNameController.dispose();
     _lNameController.dispose();
     _ageController.dispose();
@@ -51,7 +53,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
       try{ final newOwner=OwnerEntity(
             username: _userNameController.text.trim(),
             email: _emailController.text.trim(),
-            phoneNumber: _phoneController.text.trim(),
+            mobileNumber: _mobileNumController.text.trim(),
             firstName: _fNameController.text.trim(),
             lastName: _lNameController.text.trim(),
             age: int.parse(_ageController.text.trim()),
@@ -65,14 +67,14 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
             if (!mounted) return;
 
             if(success){
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Owner Created Successfully!"),
-              backgroundColor: Colors.green,
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: const Text("Owner Created Successfully!"),
+              backgroundColor: AppColors.success,
               ));
             }else{
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Failed to create owner"),
-              backgroundColor: Colors.red
+              backgroundColor: AppColors.error
               ));
             context.pop(true);
             }
@@ -81,7 +83,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text("Error: $e"),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }
@@ -93,9 +95,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<OwnerNotifier>().isLoading;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create a owner'),
-      ),
+      appBar: CustomAppBar(title: 'Create a new owner'),
       body: Form(
           key:_formKey,
           child: Padding(
@@ -116,10 +116,10 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
                     validator: Validators.validateEmail,
                   ),
                   CustomTextField(
-                    controller: _phoneController,
-                    label: 'Phone number',
+                    controller: _mobileNumController,
+                    label: 'Mobile number',
                     type: TextInputType.phone,
-                    validator: Validators.validatePhoneNum,
+                    validator: Validators.validateMobileNum,
                   ),
                   CustomTextField(
                     controller: _ageController,
