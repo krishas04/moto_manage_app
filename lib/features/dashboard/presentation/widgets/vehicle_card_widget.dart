@@ -10,7 +10,7 @@ class VehicleCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.greyBlack,
+      color: AppColors.dark,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -30,7 +30,7 @@ class VehicleCardWidget extends StatelessWidget {
               ),
             ),
             Text(
-              'Vehicle Type: ${vehicle.vehicleType.replaceAll('_', ' ')}',
+              'Type: ${vehicle.vehicleType.replaceAll('_', ' ')}',
               style: TextStyle(
                   color: AppColors.tWhite
               ),
@@ -41,10 +41,6 @@ class VehicleCardWidget extends StatelessWidget {
                   color: AppColors.tWhite
               ),
             ),
-            const SizedBox(height: 30,),
-            ElevatedButton(
-                onPressed: (){},
-                child: Text('View'))
           ],
         ),
       ),

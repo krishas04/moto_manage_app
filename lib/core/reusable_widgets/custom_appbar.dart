@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moto_manage/core/constants/app_text_styles.dart';
 
+import '../constants/app_colors.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
   final String title;
   final bool centerTitle;
@@ -11,9 +13,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
     return AppBar(
       title: Text(
         title,
-        style:AppTextStyles.heading
+        style: TextStyle(fontWeight: FontWeight.bold)
       ),
       centerTitle: centerTitle,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      foregroundColor: AppColors.primary,
     );
   }
 

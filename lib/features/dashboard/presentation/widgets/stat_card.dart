@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moto_manage/core/constants/app_text_styles.dart';
 
 import '../../../../core/constants/app_colors.dart';
 class StatCard extends StatefulWidget {
@@ -15,8 +16,7 @@ class _StatCardState extends State<StatCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 180,
-      height: 180,
+      height: 125,
       decoration: BoxDecoration(
           color: AppColors.tWhite,
           borderRadius: BorderRadius.circular(30)
@@ -24,12 +24,10 @@ class _StatCardState extends State<StatCard> {
       padding: EdgeInsets.all(10),
       child: Column(
         children: [
-          Icon(widget.icon,size: 30,),
+          Icon(widget.icon,size: 25,),
           Text(
             '${widget.count}',
-            style: TextStyle(
-                fontSize: 70
-            ),
+            style: AppTextStyles.bigNum
           ),
           Text(widget.label)
         ],

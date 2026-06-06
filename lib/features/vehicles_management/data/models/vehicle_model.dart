@@ -2,14 +2,15 @@ import 'package:moto_manage/features/vehicles_management/domain/entities/vehicle
 
 class VehicleModel extends VehicleEntity{
   VehicleModel({
-    required super.id,
+    super.id,
     required super.ownerId,
     required super.ownerUsername,
     required super.make,
     required super.model,
     required super.year,
     required super.vehicleType,
-    required super.fuelType,
+    super.fuelType,
+    super.imageUrl
   });
 
   factory VehicleModel.fromJson(Map<String,dynamic> json){
@@ -20,8 +21,23 @@ class VehicleModel extends VehicleEntity{
       make: json['make'],
       model: json['model'],
       year: json['year'],
-      vehicleType: json['vehicle_type'],
-      fuelType: json['fuel_type'],
+      vehicleType: json['vehicle_type'] ?? 'two_wheeler',
+      fuelType: json['fuel_type'] ?? 'petrol',
+      imageUrl: json['image'],
+    );
+  }
+
+  factory VehicleModel.fromEntity(VehicleEntity e) {
+    return VehicleModel(
+      id: e.id,
+      ownerId: e.ownerId,
+      ownerUsername: e.ownerUsername,
+      make: e.make,
+      model: e.model,
+      year: e.year,
+      vehicleType: e.vehicleType,
+      fuelType: e.fuelType,
+      imageUrl: e.imageUrl,
     );
   }
 
@@ -36,6 +52,19 @@ class VehicleModel extends VehicleEntity{
       year: year,
       vehicleType: vehicleType,
       fuelType: fuelType,
+      imageUrl: imageUrl
     );
+  }
+
+  Map<String, String> toFormFields({bool includeOwner = true}) {
+    final fields = <String, String>{
+      'make': make,
+      'model': model,
+      'year': year.toString(),
+      'vehicle_type': vehicleType,
+      'fuel_type': fuelType,
+    };
+    if (includeOwner) fields['owner'] = ownerId.toString();
+    return fields;
   }
 }

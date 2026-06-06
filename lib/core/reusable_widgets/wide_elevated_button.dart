@@ -3,11 +3,11 @@ import 'package:moto_manage/core/constants/app_colors.dart';
 
 class WideElevatedButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color backGroundColor;
   final Color textColor;
 
-  const WideElevatedButton({super.key,required this.text,required this.onPressed,this.backGroundColor=AppColors.b, this.textColor=AppColors.tGrey});
+  const WideElevatedButton({super.key,required this.text,this.onPressed,this.backGroundColor=AppColors.lightGrey, this.textColor=AppColors.greyBlack});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class WideElevatedButton extends StatelessWidget {
             backgroundColor: backGroundColor,
             foregroundColor: textColor,
             side: BorderSide(
-                color: AppColors.tGrey,
+                color: AppColors.secondary,
                 width:0.15 )
           ),
           child: Text(text),

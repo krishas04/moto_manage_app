@@ -12,80 +12,141 @@ import 'package:moto_manage/features/owner_management/domain/usecases/get_owners
 import 'package:moto_manage/features/vehicles_management/data/data_sources/vehicle_remote_data_source.dart';
 import 'package:moto_manage/features/vehicles_management/data/repositories/vehicle_repository_impl.dart';
 import 'package:moto_manage/features/vehicles_management/domain/repository_interfaces/vehicle_repository_interface.dart';
-import 'package:moto_manage/features/vehicles_management/domain/usecases/get_vehicle_by_owner_usecase.dart';
-import 'package:moto_manage/features/vehicles_management/domain/usecases/get_vehicles_usecase.dart';
 
+// Import the Notifiers
+import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
+import 'package:moto_manage/features/owner_management/presentation/state_management/owner_notifier.dart';
+import 'package:moto_manage/features/vehicles_management/presentation/state_management/vehicles_notifier.dart';
+
+import '../../features/insurance_management/data/data_sources/insurance_remote_data_source.dart';
+import '../../features/insurance_management/data/repositories/insurance_repository_impl.dart';
+import '../../features/insurance_management/domain/repository_interfaces/insurance_repository_interface.dart';
+import '../../features/insurance_management/domain/usecases/insurance_usecases.dart';
 import '../../features/owner_management/domain/usecases/update_owner_usecase.dart';
+import '../../features/vehicles_management/domain/usecases/vehicles_usecase.dart';
 
 final getIt = GetIt.instance;
 
-void registerAuthFeature(){
+void registerAuthFeature() {
   getIt.registerLazySingleton<AuthRemoteDataSource>(
-        ()=> AuthRemoteDataSource(client: getIt<http.Client>()),
+        () => AuthRemoteDataSource(client: getIt<http.Client>()),
   );
 
   getIt.registerLazySingleton<AuthRepository>(
-        ()=> AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+        () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<LoginUseCase>(
-        ()=> LoginUseCase(getIt<AuthRepository>()),
+        () => LoginUseCase(getIt<AuthRepository>()),
   );
 
   getIt.registerLazySingleton<RegisterUseCase>(
-          ()=> RegisterUseCase(getIt<AuthRepository>()),
+        () => RegisterUseCase(getIt<AuthRepository>()),
   );
 
   getIt.registerLazySingleton<LogoutUseCase>(
-          ()=> LogoutUseCase(getIt<AuthRepository>()),
+        () => LogoutUseCase(getIt<AuthRepository>()),
   );
 
   getIt.registerLazySingleton<RestoreSessionUseCase>(
-          ()=> RestoreSessionUseCase(getIt<AuthRepository>()),
+        () => RestoreSessionUseCase(getIt<AuthRepository>()),
   );
+
+  // --- REGISTER AUTH NOTIFIER ---
+  getIt.registerLazySingleton<AuthNotifier>(() => AuthNotifier(
+    loginUseCase: getIt(),
+    registerUseCase: getIt(),
+    logoutUseCase: getIt(),
+    restoreSessionUseCase: getIt(),
+  ));
 }
 
-void registerOwnerFeature(){
+void registerOwnerFeature() {
   getIt.registerLazySingleton<OwnerRemoteDataSource>(
-        ()=> OwnerRemoteDataSource(client: getIt<http.Client>()),
+        () => OwnerRemoteDataSource(client: getIt<http.Client>()),
   );
 
   getIt.registerLazySingleton<OwnerRepository>(
-        ()=> OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
+        () => OwnerRepositoryImpl(getIt<OwnerRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<GetOwnersUseCase>(
-        ()=> GetOwnersUseCase(getIt<OwnerRepository>()),
+        () => GetOwnersUseCase(getIt<OwnerRepository>()),
   );
 
   getIt.registerLazySingleton<CreateOwnerUseCase>(
-        ()=> CreateOwnerUseCase(getIt<OwnerRepository>()),
+        () => CreateOwnerUseCase(getIt<OwnerRepository>()),
   );
 
   getIt.registerLazySingleton<UpdateOwnerUseCase>(
         () => UpdateOwnerUseCase(getIt<OwnerRepository>()),
   );
+
+  // --- REGISTER OWNER NOTIFIER ---
+  getIt.registerLazySingleton(() => OwnerNotifier(
+    getOwnersUseCase: getIt(),
+    createOwnerUseCase: getIt(),
+    updateOwnerUseCase: getIt(),
+  ));
 }
 
-void registerVehicleFeature(){
+void registerVehicleFeature() {
   getIt.registerLazySingleton<VehicleRemoteDataSource>(
-        ()=> VehicleRemoteDataSource(client: getIt<http.Client>()),
+        () => VehicleRemoteDataSource(client: getIt<http.Client>()),
   );
 
   getIt.registerLazySingleton<VehicleRepository>(
-        ()=> VehicleRepositoryImpl(getIt<VehicleRemoteDataSource>()),
+        () => VehicleRepositoryImpl(getIt<VehicleRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<GetVehiclesUseCase>(
-        ()=> GetVehiclesUseCase(getIt<VehicleRepository>()),
+        () => GetVehiclesUseCase(getIt<VehicleRepository>()),
   );
 
   getIt.registerLazySingleton<GetVehiclesByOwnerUseCase>(
-        ()=> GetVehiclesByOwnerUseCase(getIt<VehicleRepository>()),
+        () => GetVehiclesByOwnerUseCase(getIt<VehicleRepository>()),
   );
+  getIt.registerLazySingleton<GetVehicleByIdUseCase>(
+        () => GetVehicleByIdUseCase(getIt<VehicleRepository>()),
+  );
+  getIt.registerLazySingleton(() => CreateVehicleUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => UpdateVehicleUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => DeleteVehicleUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => GetMyVehiclesUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => CreateMyVehicleUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => UpdateMyVehicleUseCase(getIt<VehicleRepository>()));
+  getIt.registerLazySingleton(() => DeleteMyVehicleUseCase(getIt<VehicleRepository>()));
+
+  // --- REGISTER VEHICLE NOTIFIER ---
+  getIt.registerLazySingleton(() => VehicleNotifier(
+    getVehiclesUseCase: getIt(),
+    getVehiclesByOwnerUseCase: getIt(),
+    getVehicleByIdUseCase: getIt(),
+    createVehicleUseCase: getIt(),
+    updateVehicleUseCase: getIt(),
+    deleteVehicleUseCase: getIt(),
+    getMyVehiclesUseCase: getIt(),
+    createMyVehicleUseCase: getIt(),
+    updateMyVehicleUseCase: getIt(),
+    deleteMyVehicleUseCase: getIt(),
+  ));
+
+  // ── Insurance ──────────────────────────────────────────────────────────────
+  getIt.registerLazySingleton<InsuranceRemoteDataSource>(
+          () => InsuranceRemoteDataSource(client: getIt<http.Client>()));
+
+  getIt.registerLazySingleton<InsuranceRepository>(
+          () => InsuranceRepositoryImpl(getIt<InsuranceRemoteDataSource>()));
+
+  getIt.registerLazySingleton(() => GetInsurancesUseCase(getIt<InsuranceRepository>()));
+  getIt.registerLazySingleton(() => GetInsuranceByVehicleUseCase(getIt<InsuranceRepository>()));
+  getIt.registerLazySingleton(() => CreateInsuranceUseCase(getIt<InsuranceRepository>()));
+  getIt.registerLazySingleton(() => UpdateInsuranceUseCase(getIt<InsuranceRepository>()));
+  getIt.registerLazySingleton(() => DeleteInsuranceUseCase(getIt<InsuranceRepository>()));
+  getIt.registerLazySingleton(() => GetMyVehicleInsuranceUseCase(getIt<InsuranceRepository>()));
 }
 
-void setupLocator(){
+void setupLocator() {
   getIt.registerLazySingleton<http.Client>(() => http.Client());
   registerOwnerFeature();
   registerVehicleFeature();

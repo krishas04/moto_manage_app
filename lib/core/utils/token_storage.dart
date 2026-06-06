@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'jwt_decoder.dart';
+
 class TokenStorage {
   static const _accessKey = 'access_token';
   static const _refreshKey = 'refresh_token';
@@ -58,6 +60,6 @@ class TokenStorage {
 
   static Future<bool> hasValidSession() async {
     final token = await getAccessToken();
-    return token != null && token.isNotEmpty;
+    return token != null && token.isNotEmpty && !JwtDecoder.isExpired(token);
   }
 }

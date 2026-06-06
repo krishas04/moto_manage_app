@@ -62,7 +62,7 @@ class OwnerModel extends OwnerEntity{
         return {
         "username": username,
         "email": email,
-        "phone_number": phoneNumber,
+        "mobile_number": mobileNumber,
         "first_name": firstName,
         "last_name": lastName,
         "age": age,

@@ -18,4 +18,20 @@ class JwtDecoder {
   static String? getRole(String token) => decode(token)['role'];
   static int? getUserId(String token) => decode(token)['user_id'];
   static String? getUsername(String token) => decode(token)['username'];
+
+  static bool isExpired(String token) {
+    try {
+      final payload = decode(token);
+
+      if (!payload.containsKey('exp')) return true;
+
+      final exp = payload['exp']; // usually in seconds
+      final expiryDate =
+      DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+
+      return DateTime.now().isAfter(expiryDate);
+    } catch (_) {
+      return true; // treat errors as expired
+    }
+  }
 }

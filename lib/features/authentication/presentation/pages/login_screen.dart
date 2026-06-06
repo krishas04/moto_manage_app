@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moto_manage/core/constants/app_text_styles.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/reusable_widgets/custom_text_field.dart';
 import '../../../../core/reusable_widgets/wide_elevated_button.dart';
 import '../../../../core/utils/validators.dart';
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(notifier.errorMessage ?? 'Login failed'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }

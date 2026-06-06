@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:moto_manage/core/api/api_service.dart';
+import '../../../../core/utils/jwt_decoder.dart';
+import '../../../../core/utils/token_storage.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/usecases/auth_usecase.dart';
 
@@ -40,17 +42,22 @@ class AuthNotifier extends ChangeNotifier {
   Future<void> restoreSession() async {
     _status = AuthStatus.loading;
     notifyListeners();
+
     try {
       final auth = await _restoreSessionUseCase.call();
-      if (auth != null) {
+
+      if (auth != null && !JwtDecoder.isExpired(auth.accessToken)) {
         _auth = auth;
         _status = AuthStatus.authenticated;
       } else {
+        await TokenStorage.clear();
+        _auth = null;
         _status = AuthStatus.unauthenticated;
       }
     } catch (_) {
       _status = AuthStatus.unauthenticated;
     }
+
     notifyListeners();
   }
 

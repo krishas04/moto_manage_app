@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moto_manage/core/reusable_widgets/custom_appbar.dart';
+import 'package:moto_manage/core/reusable_widgets/custom_card.dart';
 import 'package:moto_manage/core/utils/validators.dart';
 import 'package:moto_manage/features/authentication/presentation/statemanagement/auth_notifier.dart';
 
@@ -30,6 +31,8 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
   final _fNameController = TextEditingController();
   final _lNameController = TextEditingController();
   final _ageController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   String _selectedGender = "male";
 
@@ -44,6 +47,8 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
     _fNameController.dispose();
     _lNameController.dispose();
     _ageController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -57,6 +62,7 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
             firstName: _fNameController.text.trim(),
             lastName: _lNameController.text.trim(),
             age: int.parse(_ageController.text.trim()),
+
             gender: _selectedGender,
             );
 
@@ -71,12 +77,12 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
               content: const Text("Owner Created Successfully!"),
               backgroundColor: AppColors.success,
               ));
+              context.pop(true);
             }else{
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text("Failed to create owner"),
               backgroundColor: AppColors.error
               ));
-            context.pop(true);
             }
           } catch (e) {
               if (mounted) {
@@ -98,63 +104,58 @@ class _CreateOwnerScreenState extends State<CreateOwnerScreen> {
       appBar: CustomAppBar(title: 'Create a new owner'),
       body: Form(
           key:_formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomTextField(
-                    controller: _userNameController,
-                    label: 'Username',
-                    validator:Validators.validateUsername,
-                  ),
-                  CustomTextField(
-                    controller: _emailController,
-                    label: 'Email',
-                    validator: Validators.validateEmail,
-                  ),
-                  CustomTextField(
-                    controller: _mobileNumController,
-                    label: 'Mobile number',
-                    type: TextInputType.phone,
-                    validator: Validators.validateMobileNum,
-                  ),
-                  CustomTextField(
-                    controller: _ageController,
-                    label: 'Age',
-                    type: TextInputType.number,
-                    validator: Validators.validateAge,
-                  ),
-                  Text("Gender :"),
-                  DropdownButtonFormField<String>(
-                      initialValue: _selectedGender,
-                      items: ["male", "female", "other"].map((String value) {
-                        return DropdownMenuItem(value: value, child: Text(value));
-                      }).toList(),
-                      onChanged: (val) => setState(() => _selectedGender = val!),
-                      decoration: InputDecoration(
-                        enabledBorder: CustomTextField.buildOutlineInputBorder,
-                        focusedBorder: CustomTextField.buildOutlineInputBorder,
-                        focusedErrorBorder: CustomTextField.buildOutlineInputBorder,
-                        errorBorder: CustomTextField.buildOutlineInputBorder,
-                      )
-                  ),
-
-                  SizedBox(height: 20,),
-
-                  Center(
-                    child: WideElevatedButton(
-                        text: isLoading ? 'Creating...' : 'Create Owner',
-                        onPressed: (){
-                        _submitForm();
-                      })
-                  ),
-                ],
-
+          child: CustomCard(
+            title: 'Owner information',
+            icon: Icons.person,
+            children: [
+              CustomTextField(
+                controller: _userNameController,
+                label: 'Username',
+                validator:Validators.validateUsername,
               ),
-            ),
+              CustomTextField(
+                controller: _emailController,
+                label: 'Email',
+                validator: Validators.validateEmail,
+              ),
+              CustomTextField(
+                controller: _mobileNumController,
+                label: 'Mobile number',
+                type: TextInputType.phone,
+                validator: Validators.validateMobileNum,
+              ),
+              CustomTextField(
+                controller: _ageController,
+                label: 'Age',
+                type: TextInputType.number,
+                validator: Validators.validateAge,
+              ),
+              Text("Gender :"),
+              DropdownButtonFormField<String>(
+                  initialValue: _selectedGender,
+                  items: ["male", "female", "other"].map((String value) {
+                    return DropdownMenuItem(value: value, child: Text(value));
+                  }).toList(),
+                  onChanged: (val) => setState(() => _selectedGender = val!),
+                  decoration: InputDecoration(
+                    enabledBorder: CustomTextField.buildOutlineInputBorder,
+                    focusedBorder: CustomTextField.buildOutlineInputBorder,
+                    focusedErrorBorder: CustomTextField.buildOutlineInputBorder,
+                    errorBorder: CustomTextField.buildOutlineInputBorder,
+                  )
+              ),
+
+              SizedBox(height: 20,),
+
+              Center(
+                child: WideElevatedButton(
+                    text: isLoading ? 'Creating...' : 'Create Owner',
+                    onPressed: (){
+                    _submitForm();
+                  })
+              ),
+            ],
+
           )),
     );
   }
