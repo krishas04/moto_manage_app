@@ -1,22 +1,64 @@
 ## Moto Manage 🏍️
-Moto Manage is a Flutter application designed to help manage vehicle owners and their respective vehicles. The app communicates with a Django REST Framework backend to fetch, create, and display real-time data about owners and their motorbikes/cars — built with a strict Clean Architecture approach.
+A simple Vehicle Management System (VMS) built with Flutter. This app connects to a Django REST API to perform CRUD operations on vehicle owners and their vehicles. It was built as a learning project to understand API integration, clean architecture, and Flutter development concepts.
 
-### 🚀 Recent Updates & Progress
+## Screenshots
 
-✅ Implemented Clean Architecture with full layer separation (Presentation → Domain → Data)
-✅ Integrated get_it for dependency injection — all wiring centralised in service_locator.dart
-✅ Removed all manual dependency chains from screens
+<p align="center">
+  <img src="assets/screenshots/login.jpeg" width="200">
+  <img src="assets/screenshots/dashboard1.jpeg" width="200">
+  <img src="assets/screenshots/dashboard2.jpeg" width="200">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/ownerlist.jpeg" width="200">
+  <img src="assets/screenshots/create_owner.jpeg" width="200">
+  <img src="assets/screenshots/update_detail.jpeg" width="200">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/vehiclelist.jpeg" width="200">
+  <img src="assets/screenshots/add_vehicle.jpeg" width="200">
+  <img src="assets/screenshots/logout.jpeg" width="200">
+</p>
+
+---
+
+## What This App Does
+
+- **Create Owners** — Add new vehicle owners with details like name, contact, and gender
+- **Add Vehicles** — Register vehicles and link them to specific owners
+- **List Owners & Vehicles** — View all owners and vehicles in a clean list
+- **Owner-Vehicle Link** — Tap an owner to see all vehicles owned by them
+- **Update Details** — Edit owner and vehicle information
+- **Admin Login** — Secure login for administrators
+
+> **Note:** Accounts created through the signup screen do not create valid login credentials. Admin login is handled separately.
+
+---
+## What I Learned
+
+- **API Integration** — Connecting Flutter app to Django REST Framework backend
+- **Clean Architecture** — Separating code into Presentation, Domain, and Data layers
+- **Reusable Widgets** — Building custom widgets used across multiple screens
+- **Authentication & Tokens** — Handling login sessions and secure API requests
+- **Form Validation** — Validating user input before sending to server
+- **CRUD Operations** — Create, Read, Update, Delete via REST API
+- **Dependency Injection** — Managing dependencies with `get_it`
+- **Declarative Routing** — Navigation using `go_router`
+- **State Management** — Managing UI state during API calls and data changes
+
+---
 
 ### 🛠️ Tech Stack & Key Dependencies
-`Purpose`               `Package`
-Framework               Flutter
-Navigation              go_router — declarative routing with path parameters
-Networking              http — RESTful API communication
-Dependency Injection    get_it — service locator pattern
-Backend                 Django REST Framework (DRF)
+- Framework              : Flutter
+- Navigation             : go_router - declarative routing with path parameters
+- Networking             : http - RESTful API communication
+- Dependency Injection   : get_it - service locator pattern
+- Backend                : Django REST Framework (DRF)
 
 ### 🏗️ Architecture
 This project follows Clean Architecture with a Feature-First folder structure. Each feature is fully self-contained with its own data, domain, and presentation layers.
+```
 lib/
 ├── core/
 │   ├── constants/
@@ -40,60 +82,52 @@ lib/
 │       └── widgets/              # Reusable UI components
 │
 └── vehicles_management/
-├── data/
-│   ├── data_sources/         # VehicleRemoteDataSource
-│   ├── models/               # VehicleModel
-│   └── repositories/         # VehicleRepositoryImpl
-├── domain/
-│   ├── entities/             # VehicleEntity
-│   ├── repository_interfaces/ # VehicleRepository
-│   └── usecases/             # GetVehiclesUseCase, GetVehiclesByOwnerUseCase
-└── presentation/
-├── pages/                # VehiclesScreen, VehiclesByOwnerScreen
-├── state_management/
-└── widgets/
+    ├── data/
+    │   ├── data_sources/         # VehicleRemoteDataSource
+    │   ├── models/               # VehicleModel
+    │   └── repositories/         # VehicleRepositoryImpl
+    ├── domain/
+    │   ├── entities/             # VehicleEntity
+    │   ├── repository_interfaces/ # VehicleRepository
+    │   └── usecases/             # GetVehiclesUseCase, GetVehiclesByOwnerUseCase
+    └── presentation/
+    ├── pages/                # VehiclesScreen, VehiclesByOwnerScreen
+    ├── state_management/
+    └── widgets/
+```
 
-### Layer Responsibilities
-`Presentation` — UI only. Shows data, captures input, calls use cases. No HTTP, no JSON, no repositories.
-`Domain` — Pure Dart. Zero external imports. Entities, abstract repository interfaces, and use cases. This is the core of the app — it never changes when the data source changes.
-`Data` — Implements the domain interfaces. Handles HTTP calls, JSON parsing, and model conversion. Only this layer knows about http or any external service.
-**Dependency Rule**
-Dependencies only point inward. Presentation knows about Domain. Data knows about Domain. Nothing knows about Presentation. Domain knows about nobody.
-Presentation  →  Domain  ←  Data
-
-### 💉 Dependency Injection with get_it
-All dependencies are registered once in lib/core/di/service_locator.dart and called from main.dart before runApp. Screens access use cases via getIt<UseCaseType>() — they never instantiate repositories or data sources directly.
-    ```
-    void main() {
-    setupLocator(); // register everything
-    runApp(const MyApp());
-    }
-    ```
-    ```
-    // any screen
-    final getOwnersUseCase = getIt<GetOwnersUseCase>();
-    ```
-
-### 🛣️ Navigation
-Centralised declarative routing using GoRouter in lib/config/router/router.dart.
-RouteScreen/OwnerScreen/usersCreateOwnerScreen/vehiclesVehiclesScreen/vehicles/:ownerIdVehiclesByOwnerScreen
 
 ### 📱 Features Implemented
-FeatureStatusList all owners from API✅Create new owner with form validation✅List all vehicles✅List vehicles filtered by owner✅Dropdown gender selection✅SnackBar feedback on API success/failure✅Loading indicator during API calls✅Clean Architecture — full layer separation✅Dependency injection with get_it✅Centralised routing with GoRouter✅
+FeatureStatus
+- List all owners from API
+- Create new owner with form validation
+- List all vehicles
+- List vehicles filtered by owner
+- Dropdown gender selection
+- SnackBar feedback on API success/failure
+- Loading indicator during API calls
+- Clean Architecture - full layer separation
+- Dependency injection with get_it
+- Centralised routing with GoRouter
 
+---
 ### 🔧 Running the Project
 
 Ensure your Django backend is running locally
-Update lib/core/constants/api_constants.dart with your machine's local IP:
-    ```
-     static const String baseUrl = 'http://192.168.x.x:8000/api';
-    ```
+Update `lib/core/constants/api_constants.dart` with your machine's local IP:
+
+```
+static const String baseUrl = 'http://192.168.x.x:8000/api';
+```
+
 On Android, confirm AndroidManifest.xml has:
-    ```
-     android:usesCleartextTraffic="true"
-    ```
+
+ ```
+ android:usesCleartextTraffic="true"
+ ```
 Run the app:
-    ```    
-    bash   flutter pub get
-    flutter run
-    ```
+
+ ```    
+ flutter pub get
+ flutter run
+ ```
